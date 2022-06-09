@@ -1,3 +1,5 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
     content: [
         "./pages/**/*.{js,ts,jsx,tsx}",
@@ -8,6 +10,7 @@ module.exports = {
             colors: {
                 link: "#8be9fd",
                 secondary: "#353f5c",
+                thirdparty: "#D0D0D0",
                 light: {
                     50: "#fdfdfd",
                     100: "#fcfcfc",
@@ -20,6 +23,11 @@ module.exports = {
                     800: "#dee2e6",
                     900: "#dde1e3",
                 },
+            },
+            fontFamily: {
+                sans: ["Inter", ...defaultTheme.fontFamily.sans],
+                serif: ['"DM Serif Text"', ...defaultTheme.fontFamily.serif],
+                mono: ['"iA Writer Mono"', ...defaultTheme.fontFamily.mono],
             },
         },
     },

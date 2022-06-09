@@ -9,11 +9,11 @@ const Error = () => {
     }
 
     return (
-        <div className="mx-auto max-w-3xl px-6 text-white justify-center flex flex-col  ">
+        <div className="mx-auto max-w-3xl px-6 text-black justify-center flex flex-col  ">
             <h2 className="text-rose-700 font-bold text-2xl mb-4">
                 404: Page Not Found!
             </h2>
-            <p className="mb-4">
+            <div className="mb-4">
                 <span className="text-amber-400	">
                     website.at(
                     <span className="text-emerald-400	">
@@ -22,10 +22,10 @@ const Error = () => {
                     )
                 </span>{" "}
                 is out of bounds.
-            </p>
+            </div>
 
             <Link href="">
-                <p className="hover:underline">&gt; Go To Home Page</p>
+                <p className="hover:underline cursor-pointer">&gt; Go To Home Page</p>
             </Link>
         </div>
     );

@@ -37,16 +37,16 @@ const AllPost = ({ response }: { response: any }) => {
               );
 
     return (
-        <div className="mx-auto	text-white  max-w-3xl container px-6">
+        <div className="mx-auto	text-black  max-w-3xl container px-6">
             <section className="mb-10">
-                <h1 className="heading-text mb-8 text-4xl font-bold">Blog</h1>
-                <p className="tracking-wider leading-7 py-3">
+                <h1 className="heading-text mb-8 text-4xl font-serif">Blog</h1>
+                <p className="tracking-wider leading-8 py-3 font-lg font-bold">
                     Welcome to my blog. I write about things that interest me,
                     mostly about web development, productivity, and being a
                     life-long learner.
                 </p>
                 <input
-                    className="outline-0 w-full bg-secondary rounded p-2"
+                    className="outline-0 w-full bg-thirdparty rounded p-2"
                     type="text"
                     placeholder="Search Posts"
                     value={searchTerm}
@@ -59,13 +59,13 @@ const AllPost = ({ response }: { response: any }) => {
             <div className="mx-auto	">
                 {searchTerm === "" && (
                     <>
-                        <h1 className="text-4xl font-bold text-white mb-12">
+                        <h1 className="text-4xl  text-black mb-12 font-serif">
                             Most Popular
                         </h1>
                         {response.map((result: any, key: number) => (
                             <div key={key} className="mb-12">
-                                <div className="text-white">
-                                    <div className="text-2xl text-link font-bold cursor-pointer hover:underline">
+                                <div className="text-black">
+                                    <div className="text-lg cursor-pointer hover:underline font-bold ">
                                         <Link
                                             href={`/blog/${result.properties.slug.rich_text[0].text.content}`}
                                         >
@@ -75,13 +75,13 @@ const AllPost = ({ response }: { response: any }) => {
                                             }
                                         </Link>
                                     </div>
-                                    <div>
+                                    <div className="text-gray-700">
                                         {
                                             result.properties.Description
                                                 .rich_text[0].text.content
                                         }
                                     </div>
-                                    <div>
+                                    <div className="text-gray-700">
                                         {result.created_time.split("T")[0]}
                                     </div>
                                 </div>
@@ -91,12 +91,12 @@ const AllPost = ({ response }: { response: any }) => {
                 )}
                 {searchTerm && (
                     <>
-                        <h1 className="text-4xl font-bold text-white mb-12">
+                        <h1 className="text-4xl font-bold text-black mb-12 font-serif">
                             All Posts
                         </h1>
                         {filteredAllPosts.map((result: any, key: number) => (
                             <div key={key} className="mb-12">
-                                <div className="text-white">
+                                <div className="text-black">
                                     <div className="text-2xl text-link font-bold cursor-pointer hover:underline">
                                         <Link
                                             href={`/blog/${result.properties.slug.rich_text[0].text.content}`}

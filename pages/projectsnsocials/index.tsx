@@ -106,7 +106,7 @@ const LinkCard = (props:any) => {
 
 const Projectsnsocials = () => {
     return (
-        <div className="text-white m-auto max-w-3xl container px-6">
+        <div className="text-black m-auto max-w-3xl container px-6">
             <div className="font-serif text-4xl mb-8">Projects</div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {projectLinks.map((project: any) => (

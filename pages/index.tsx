@@ -16,7 +16,7 @@ const Home: NextPage = () => {
                 <title>KirilDev</title>
             </Head>
 
-            <div className="mx-auto max-w-3xl px-6 text-white  justify-center flex flex-col ">
+            <div className="mx-auto max-w-3xl px-6 text-black  justify-center flex flex-col font-medium">
                 <img
                     className="rounded-full object-cover "
                     src="/images/avatar1.png"

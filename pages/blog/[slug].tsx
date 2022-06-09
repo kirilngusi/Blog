@@ -44,12 +44,17 @@ const singlePost = ({ blocks }: { blocks: any }) => {
                 showTableOfContents={true}
                 minTableOfContentsItems={3}
             />
-            {/* <h1>hello</h1> */}
-            <style global jsx>{`
-                .notion-app {
+
+            
+            {/*
+            //style dark mode 
+            .notion-app {
                     background: #282a36;
                     color: white;
-                }
+            } */}
+
+            <style global jsx>{`
+                
                 .notion-header {
                     display: none;
                 }
@@ -64,7 +69,6 @@ const singlePost = ({ blocks }: { blocks: any }) => {
                 .notion-table-of-contents-item {
                     white-space: wrap;
                     line-height: 1.25rem;
-                    color: white;
                     font-weight: normal;
 
 

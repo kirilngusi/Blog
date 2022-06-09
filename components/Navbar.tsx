@@ -28,7 +28,7 @@ const MenuItemLink = (props: { href: string; children: React.ReactNode }) => {
 const Navbar = () => {
     const [enabled, setEnabled] = useState(false);
     return (
-        <header className="primary-text z-10 flex items-center px-4 py-3 justify-between sticky top-0 backdrop-blur-lg">
+        <header className="primary-text z-10 flex items-center px-4 py-3 justify-between sticky top-0 backdrop-blur-lg text-gray-500">
             <Link href="/">
                 {/* <Image
                     className="bg-white	 duration-150 cursor-pointer hover:opacity-80"
@@ -37,17 +37,17 @@ const Navbar = () => {
                     width={42}
                     height={42}
                 /> */}
-                <h1 className="text-white duration-150 cursor-pointer hover:opacity-80">Home</h1>
+                <h1 className=" duration-150 cursor-pointer hover:opacity-80">Home</h1>
             </Link>
 
-            <div className="flex items-center space-x-4 text-white">
+            <div className="flex items-center space-x-4 ">
                 <nav className="hidden items-center space-x-2 sm:flex">
                     {navigations.map((n, i) => (
                         <Link href={n.link} key={i} passHref>
                             <a className="nav-links p-3">{n.name}</a>
                         </Link>
                     ))}
-                    <Switch
+                    {/* <Switch
                         checked={enabled}
                         onChange={setEnabled}
                         className={`${
@@ -60,7 +60,7 @@ const Navbar = () => {
                                 enabled ? "translate-x-6" : "translate-x-1"
                             } inline-block h-4 w-4 transform rounded-full bg-white`}
                         />
-                    </Switch>
+                    </Switch> */}
                 </nav>
 
                 <div className="block sm:hidden">
