@@ -2,6 +2,7 @@ import React from "react";
 import { NotionRenderer } from "react-notion-x";
 
 import { getAllPosts, getBlocks, getPage, test } from "../../lib/notion";
+import { NotionAPI } from "notion-client";
 
 import { Collection } from "react-notion-x/build/third-party/collection";
 import { Equation } from "react-notion-x/build/third-party/equation";
@@ -25,6 +26,7 @@ const Modal = dynamic(
 );
 
 const singlePost = ({ blocks }: { blocks: any }) => {
+    // console.log(blocks)
     return (
         <div className="container mx-auto max-w-3xl px-1 lg:max-w-5xl">
             <NotionRenderer
@@ -34,6 +36,7 @@ const singlePost = ({ blocks }: { blocks: any }) => {
                     Equation,
                     Modal,
                     Pdf,
+
                 }}
                 recordMap={blocks}
                 fullPage={true}
@@ -41,6 +44,7 @@ const singlePost = ({ blocks }: { blocks: any }) => {
                 showTableOfContents={true}
                 minTableOfContentsItems={3}
             />
+            {/* <h1>hello</h1> */}
             <style global jsx>{`
                 .notion-app {
                     background: #282a36;
@@ -77,35 +81,30 @@ export default singlePost;
 
 export const getStaticPaths = async () => {
     const allPosts = await getAllPosts();
-    // console.log(allPosts);
     return {
-        paths: allPosts.map((post: any) => ({
-            params: {
-                slug: post.properties.slug.rich_text[0].text.content,
-            },
+        paths: allPosts.map((p: any) => ({
+            params: { slug: p.properties.slug.rich_text[0].plain_text },
         })),
         fallback: "blocking",
     };
 };
 
 export const getStaticProps = async ({ params }: { params: any }) => {
-    // console.log(params);
-    // const res = await getBlocks('4a49d049-936b-4958-bee7-1964e8d1041b') as any;
+    const db = await getAllPosts(params.slug)
+    const post = db.find((t:any) => t.properties.slug.rich_text[0].text.content === params?.slug);
+    
+    if (!post) {
+        return {
+          notFound: true,
+        };
+    }
+    
+    const notion = new NotionAPI();
+    const blocks = await notion.getPage(post.id);
 
-    // const blocks = await JSON.parse(JSON.stringify(res));
-
-    // const notion = new NotionAPI();
-    // const blocks = await notion.getPage('4a49d049-936b-4958-bee7-1964e8d1041b');
-
-    // const blocks1 = await fetch(
-    //     "https://notion-api.splitbee.io/v1/page/Timecut-anime-js-Bootstrap-9b76d77e0cf8445d81493caddc4d9351"
-    // );
-    // const blocks = await blocks1.json();
-
-    const blocks = await test(params.slug);
-
+    // console.log(posts)
     return {
         props: { blocks },
-        // revalidate: 60,
+        revalidate: 60,
     };
 };

@@ -35,7 +35,7 @@ const Home: NextPage = () => {
 
                 <p className="mb-8 leading-7 ">Student / Developer  </p>
 
-                <p className="leading-7">
+                <div className="leading-7">
                     Study Information Security at{" "}
                     <a
                         href="http://actvn.edu.vn/"
@@ -46,9 +46,9 @@ const Home: NextPage = () => {
                         🎓 KMA
                     </a>{" "}
                     (Academy Of Cryptography Techniques)
-                </p>
+                </div>
 
-                <p className="mb-8 mt-8">
+                <div className="mb-8 mt-8">
                     More about me:{" "}
                     <Link href="/projectsnsocials">
                         <a className="underline"> Projects & Socials </a>
@@ -59,7 +59,7 @@ const Home: NextPage = () => {
                             <a className="underline">Blog </a>
                         </Link>
                     </div>
-                </p>
+                </div>
 
                 <p>Most of my work can be found on GitHub.</p>
             </div>

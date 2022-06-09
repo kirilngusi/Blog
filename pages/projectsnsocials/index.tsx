@@ -4,6 +4,7 @@ import {
     AiOutlineSchedule,
     AiOutlineAppstore,
     AiOutlineSend,
+    AiFillFacebook
 } from "react-icons/ai";
 import {
     FiBookOpen,
@@ -61,16 +62,16 @@ const socialLinks = [
         followerName: "readers",
     },
     {
-        name: "Telegram",
-        link: "/",
-        icon: AiOutlineSend,
-        apiUrl: "",
+        name: "Facebook",
+        link: "https://www.facebook.com/imkiril",
+        icon: AiFillFacebook,
+        apiUrl: "/",
         color: "#d71a1b",
         followerName: "readers",
     },
 ];
 
-const ProjectCard = (props) => {
+const ProjectCard = (props:any) => {
     return (
         <a href={props.link}>
             <div className="flex items-center justify-between  rounded border-b-4 bg-light-200 transition-all p-4 text-black hover:opacity-80 hover:shadow-lg dark:bg-dark-700">
@@ -85,7 +86,7 @@ const ProjectCard = (props) => {
     );
 };
 
-const LinkCard = (props) => {
+const LinkCard = (props:any) => {
     return (
         <a href={props.link}>
             <div

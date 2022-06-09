@@ -7,11 +7,22 @@ const notion: any = new Client({ auth: process.env.NOTION_API_KEY });
 
 const api = new NotionAPI();
 
-export const getAllPosts = async () => {
-    const res = await notion.databases.query({
-        database_id: process.env.NOTION_DATABASE_ID,
-    });
-    return res.results;
+export const getAllPosts = async (slug?: string) => {
+
+    //select 
+    let dbQuery:any = {
+      database_id:  process.env.NOTION_DATABASE_ID,
+      filter: { and: [{ property: 'status', select: { equals: 'published' } }] },
+      sorts: [{ property: 'Date', direction: 'descending' }],
+    }
+
+    if (slug) {
+      dbQuery.filter.and.push({ property: 'slug', rich_text: { equals: slug } })
+    }
+
+    const response = await notion.databases.query(dbQuery)
+    return response.results
+
 };
 
 export const getPage = async (pageId: string) => {
