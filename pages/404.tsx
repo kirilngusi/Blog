@@ -24,7 +24,7 @@ const Error = () => {
                 is out of bounds.
             </div>
 
-            <Link href="">
+            <Link href="/">
                 <p className="hover:underline cursor-pointer">&gt; Go To Home Page</p>
             </Link>
         </div>
