@@ -19,6 +19,39 @@ import Link from "next/link";
 
 import dayjs from "dayjs";
 
+export interface SlugContent {
+    text: {
+        content: string;
+    };
+}
+
+export interface Slug {
+    rich_text: SlugContent[];
+}
+
+interface Title extends Slug {
+    title: SlugContent[];
+}
+
+interface Description extends Slug {
+    rich_text: SlugContent[];
+}
+
+interface IPost {
+    id: string;
+    slug: Slug;
+    Title: Title;
+    date: string;
+    tag: string[];
+    lang: "en" | "vi";
+    Description: Description;
+}
+
+interface Result {
+    properties: IPost;
+    created_time: string;
+}
+
 const AllPost = ({ response }: { response: any }) => {
     // console.log(response);
     const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +95,7 @@ const AllPost = ({ response }: { response: any }) => {
                         <h1 className="text-4xl  text-black mb-12 font-serif">
                             Most Popular
                         </h1>
-                        {response.map((result: any, key: number) => (
+                        {response.map((result: Result, key: number) => (
                             <div key={key} className="mb-12">
                                 <div className="text-black">
                                     <div className="text-lg cursor-pointer hover:underline font-bold ">
@@ -128,7 +161,6 @@ const AllPost = ({ response }: { response: any }) => {
                                                     .content || ""
                                             }
                                         />
-                                       
                                     </div>
                                     <div>
                                         {result.created_time.split("T")[0]}
