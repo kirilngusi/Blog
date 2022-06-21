@@ -72,7 +72,7 @@ const AllPost = ({ response }: { response: any }) => {
     return (
         <div className="mx-auto	text-black  max-w-3xl container px-6">
             <section className="mb-10">
-                <h1 className="heading-text mb-8 text-4xl font-serif">Blog</h1>
+                <h1 className="heading-text mb-8 text-4xl font-bold">Blog</h1>
                 <p className="tracking-wider leading-8 py-3 font-lg font-bold">
                     Welcome to my blog. I write about things that interest me,
                     mostly about web development, productivity, and being a
@@ -92,7 +92,7 @@ const AllPost = ({ response }: { response: any }) => {
             <div className="mx-auto	">
                 {searchTerm === "" && (
                     <>
-                        <h1 className="text-4xl  text-black mb-12 font-serif">
+                        <h1 className="text-4xl  text-black mb-12 font-bold">
                             Most Popular
                         </h1>
                         {response.map((result: Result, key: number) => (

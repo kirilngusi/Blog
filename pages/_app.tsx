@@ -3,6 +3,10 @@ import "../styles/globals.css";
 import Layout from "../components/Layout";
 
 import type { AppProps } from "next/app";
+import Router from "next/router";
+
+import NProgress from 'nprogress';
+import "nprogress/nprogress.css";
 
 // core styles shared by all of react-notion-x (required)
 import "react-notion-x/src/styles.css";
@@ -13,6 +17,10 @@ import "prismjs/themes/prism-tomorrow.css";
 // used for rendering equations (optional)
 import "katex/dist/katex.min.css";
 import Head from "next/head";
+
+Router.events.on('routeChangeStart', () => NProgress.start());
+Router.events.on('routeChangeComplete', () => NProgress.done());
+Router.events.on('routeChangeError', () => NProgress.done());
 
 function MyApp({ Component, pageProps }: AppProps) {
     <Head>

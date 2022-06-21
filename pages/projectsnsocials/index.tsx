@@ -107,14 +107,14 @@ const LinkCard = (props:any) => {
 const Projectsnsocials = () => {
     return (
         <div className="text-black m-auto max-w-3xl container px-6">
-            <div className="font-serif text-4xl mb-8">Projects</div>
+            <div className="font-bold text-3xl mb-8">Projects</div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {projectLinks.map((project: any) => (
                     <ProjectCard key={project.slug} {...project} />
                 ))}
             </div>
 
-            <div className="mt-8 mb-8 text-4xl font-serif">Socials</div>
+            <div className="mt-8 mb-8 text-3xl font-bold">Socials</div>
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
                 {socialLinks.map((link: any) => (
                     <LinkCard key={link.name} {...link} />
