@@ -17,6 +17,8 @@ import "prismjs/themes/prism-tomorrow.css";
 // used for rendering equations (optional)
 import "katex/dist/katex.min.css";
 import Head from "next/head";
+import ReactGA from "react-ga4";
+ReactGA.initialize("G-KCMPTVY7L2");
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());

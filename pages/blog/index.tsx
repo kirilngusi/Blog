@@ -17,6 +17,8 @@ import Highlighter from "react-highlight-words";
 
 import Link from "next/link";
 
+import ReactGA from "react-ga4";
+
 import dayjs from "dayjs";
 
 export interface SlugContent {
@@ -50,6 +52,13 @@ interface IPost {
 interface Result {
     properties: IPost;
     created_time: string;
+}
+
+const handleClick = () => {
+    ReactGA.event({
+        action: "click to read",
+        category: "read"
+    })
 }
 
 const AllPost = ({ response }: { response: any }) => {
@@ -98,7 +107,10 @@ const AllPost = ({ response }: { response: any }) => {
                         {response.map((result: Result, key: number) => (
                             <div key={key} className="mb-12">
                                 <div className="text-black">
-                                    <div className="text-lg cursor-pointer hover:underline font-bold ">
+                                    <div
+                                        className="text-lg cursor-pointer hover:underline font-bold"
+                                        onClick={handleClick}
+                                    >
                                         <Link
                                             href={`/blog/${result.properties.slug.rich_text[0].text.content}`}
                                         >
