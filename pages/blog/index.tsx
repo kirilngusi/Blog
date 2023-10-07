@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { NotionRenderer } from "react-notion-x";
-import { NotionAPI } from "notion-client";
-import { GetStaticProps } from "next";
+import React, {useState} from "react";
+import {NotionRenderer} from "react-notion-x";
+import {NotionAPI} from "notion-client";
+import {GetStaticProps} from "next";
 
-import { Code } from "react-notion-x/build/third-party/code";
-import { Collection } from "react-notion-x/build/third-party/collection";
-import { Equation } from "react-notion-x/build/third-party/equation";
-import { Pdf } from "react-notion-x/build/third-party/pdf";
-import { Modal } from "react-notion-x/build/third-party/modal";
+import {Code} from "react-notion-x/build/third-party/code";
+import {Collection} from "react-notion-x/build/third-party/collection";
+import {Equation} from "react-notion-x/build/third-party/equation";
+import {Pdf} from "react-notion-x/build/third-party/pdf";
+import {Modal} from "react-notion-x/build/third-party/modal";
 
-import { ExtendedRecordMap } from "notion-types";
+import {ExtendedRecordMap} from "notion-types";
 
-import { getAllPosts, getBlocks, getPage, test } from "../../lib/notion";
+import {getAllPosts, getBlocks, getPage, test} from "../../lib/notion";
 
 import Highlighter from "react-highlight-words";
 
@@ -61,7 +61,7 @@ const handleClick = () => {
     })
 }
 
-const AllPost = ({ response }: { response: any }) => {
+const AllPost = ({response}: { response: any }) => {
     // console.log(response);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -69,14 +69,14 @@ const AllPost = ({ response }: { response: any }) => {
         searchTerm === ""
             ? response
             : response.filter(
-                  (result: any) =>
-                      result.properties.Title.title[0].text.content
-                          .toLocaleLowerCase()
-                          .includes(searchTerm.toLocaleLowerCase()) ||
-                      result.properties.Description.rich_text[0].text.content
-                          ?.toLocaleLowerCase()
-                          .includes(searchTerm.toLocaleLowerCase())
-              );
+                (result: any) =>
+                    result?.properties?.Title?.title[0]?.text?.content
+                        .toLocaleLowerCase()
+                        .includes(searchTerm.toLocaleLowerCase()) ||
+                    result?.properties?.Description?.rich_text[0]?.text?.content
+                        ?.toLocaleLowerCase()
+                        .includes(searchTerm.toLocaleLowerCase())
+            );
 
     return (
         <div className="mx-auto	text-black  max-w-3xl container px-6">
@@ -104,7 +104,7 @@ const AllPost = ({ response }: { response: any }) => {
                         <h1 className="text-4xl  text-black mb-12 font-bold">
                             Most Popular
                         </h1>
-                        {response.map((result: Result, key: number) => (
+                        {response?.map((result: Result, key: number) => (
                             <div key={key} className="mb-12">
                                 <div className="text-black">
                                     <div
@@ -112,22 +112,22 @@ const AllPost = ({ response }: { response: any }) => {
                                         onClick={handleClick}
                                     >
                                         <Link
-                                            href={`/blog/${result.properties.slug.rich_text[0].text.content}`}
+                                            href={`/blog/${result?.properties?.slug?.rich_text[0]?.text?.content}`}
                                         >
                                             {
-                                                result.properties.Title.title[0]
-                                                    .text.content
+                                                result?.properties?.Title?.title[0]
+                                                    ?.text?.content
                                             }
                                         </Link>
                                     </div>
                                     <div className="text-gray-700">
                                         {
-                                            result.properties.Description
-                                                .rich_text[0].text.content
+                                            result?.properties?.Description
+                                                ?.rich_text[0]?.text?.content
                                         }
                                     </div>
                                     <div className="text-gray-700">
-                                        {result.created_time.split("T")[0]}
+                                        {result?.created_time?.split("T")[0]}
                                     </div>
                                 </div>
                             </div>
@@ -144,19 +144,19 @@ const AllPost = ({ response }: { response: any }) => {
                                 <div className="text-black">
                                     <div className="text-2xl text-link font-bold cursor-pointer hover:underline">
                                         <Link
-                                            href={`/blog/${result.properties.slug.rich_text[0].text.content}`}
+                                            href={`/blog/${result?.properties?.slug?.rich_text[0]?.text?.content}`}
                                         >
                                             <Highlighter
                                                 highlightClassName="text-lime-500"
                                                 className=""
-                                                searchWords={searchTerm.split(
+                                                searchWords={searchTerm?.split(
                                                     " "
                                                 )}
                                                 autoEscape={true}
                                                 textToHighlight={
-                                                    result.properties.Title
-                                                        .title[0].text
-                                                        .content || ""
+                                                    result?.properties?.Title
+                                                        ?.title[0]?.text
+                                                        ?.content || ""
                                                 }
                                             />
                                         </Link>
@@ -168,14 +168,14 @@ const AllPost = ({ response }: { response: any }) => {
                                             searchWords={searchTerm.split(" ")}
                                             autoEscape={true}
                                             textToHighlight={
-                                                result.properties.Description
-                                                    .rich_text[0].text
-                                                    .content || ""
+                                                result?.properties?.Description
+                                                    ?.rich_text[0]?.text
+                                                    ?.content || ""
                                             }
                                         />
                                     </div>
                                     <div>
-                                        {result.created_time.split("T")[0]}
+                                        {result?.created_time?.split("T")[0]}
                                     </div>
                                 </div>
                             </div>
