@@ -1,28 +1,10 @@
 import React from "react";
 
-import {
-    AiOutlineSchedule,
-    AiOutlineAppstore,
-    AiOutlineSend,
-    AiFillFacebook
-} from "react-icons/ai";
-import {
-    FiBookOpen,
-    FiCloud,
-    FiFileText,
-    FiHexagon,
-    FiRss,
-    FiZap,
-} from "react-icons/fi";
+import {AiFillFacebook, AiOutlineAppstore} from "react-icons/ai";
+import {FiFileText,} from "react-icons/fi";
 
-import {
-    SiGithub,
-    SiMedium,
-    SiSinaweibo,
-    SiSteam,
-    SiTelegram,
-    SiTwitter,
-} from "react-icons/si";
+import {SiGithub, SiLinkedin, SiTwitter,} from "react-icons/si";
+
 const projectLinks = [
     {
         name: "Scheduler-Kma",
@@ -54,10 +36,10 @@ const socialLinks = [
         color: "#1da1f2",
     },
     {
-        name: "Medium",
-        link: "https://medium.com/tuan2k21211",
-        icon: SiMedium,
-        apiUrl: "https://api.swo.moe/stats/medium/tuan2k21211",
+        name: "Linkedin",
+        link: "https://www.linkedin.com/in/vuong-tuan-anh-300431208/",
+        icon: SiLinkedin,
+        apiUrl: "#",
         color: "#00a669",
         followerName: "readers",
     },
@@ -71,34 +53,35 @@ const socialLinks = [
     },
 ];
 
-const ProjectCard = (props:any) => {
+const ProjectCard = (props: any) => {
     return (
         <a href={props.link}>
-            <div className="flex items-center justify-between  rounded border-b-4 bg-light-200 transition-all p-4 text-black hover:opacity-80 hover:shadow-lg dark:bg-dark-700">
+            <div
+                className="flex items-center justify-between  rounded border-b-4 bg-light-200 transition-all p-4 text-black hover:opacity-80 hover:shadow-lg dark:bg-dark-700">
                 <div>
                     <h1 className="font-bold">{props.name}</h1>
                     <div className="font-mono text-sm">{props.name}</div>
                 </div>
 
-                <props.icon size={24} className="flex-shrink-0" />
+                <props.icon size={24} className="flex-shrink-0"/>
             </div>
         </a>
     );
 };
 
-const LinkCard = (props:any) => {
+const LinkCard = (props: any) => {
     return (
         <a href={props.link}>
             <div
                 className="flex items-center justify-between  rounded border-b-4 bg-light-200 transition-all p-4 text-black hover:opacity-80 hover:shadow-lg dark:bg-dark-700"
-                style={{ borderBottomColor: props.color }}
+                style={{borderBottomColor: props.color}}
             >
                 <div>
                     <h1 className="font-bold">{props.name}</h1>
                     {/* <div className="font-mono text-sm">{props.slug}</div> */}
                 </div>
 
-                <props.icon size={24} className="" />
+                <props.icon size={24} className=""/>
             </div>
         </a>
     );
