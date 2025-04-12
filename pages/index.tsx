@@ -14,26 +14,40 @@ const Home: NextPage = () => {
         <>
             <Head>
                 <title>KirilDev</title>
+                <meta
+                    name="description"
+                    content="KirilNgusi's personal website"
+                />
+                <link rel="icon" href="/favicon.ico" />
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1.0"
+                />
+                <meta
+                    name="keywords"
+                    content="KirilNgusi, Kiril, KirilNgusi's personal website"
+                />
+                <meta
+                    name="author"
+                    content="KirilNgusi"
+                />
+                <meta property="og:title" content="KirilNgusi" />
+                <meta
+                    property="og:description"
+                    content="KirilNgusi's personal website"
+                />
             </Head>
 
-            <div className="mx-auto max-w-3xl px-6 text-black  justify-center flex flex-col font-medium">
-                <img
-                    className="rounded-full object-cover "
-                    src="/images/avatar1.png"
-                    alt="avatar"
-                    width={120}
-                    height={120}
-                />
-
+                <div className="mx-auto max-w-3xl px-6 text-black  justify-center flex flex-col font-medium">
                 <h1 className="heading-text my-8 font-bold text-4xl">
                     <Typical
-                        steps={["Hi,", 1000, "Tuấn Anh Here 👏", 1000]}
+                        steps={["Hi,", 1000, "Kiril Here 👏", 1000]}
                         loop={Infinity}
                         wrapper="p"
                     />
                 </h1>
 
-                <p className="mb-8 leading-7 ">Student / Developer  </p>
+                <p className="mb-8 leading-7 ">Software Engineer  </p>
 
                 <div className="leading-7">
                     Study Information Security at{" "}

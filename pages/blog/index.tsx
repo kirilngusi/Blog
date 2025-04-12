@@ -80,9 +80,9 @@ const AllPost = ({response}: { response: any }) => {
 
     return (
         <div className="mx-auto	text-black  max-w-3xl container px-6">
-            <section className="mb-10">
-                <h1 className="heading-text mb-8 text-4xl font-bold">Blog</h1>
-                <p className="tracking-wider leading-8 py-3 font-lg font-bold">
+            <section className="mb-6">
+                <h1 className="heading-text mb-2 text-4xl font-bold">Blog</h1>
+                <p className="tracking-wider py-3 font-lg font-bold">
                     Welcome to my blog. I write about things that interest me,
                     mostly about web development, productivity, and being a
                     life-long learner.
@@ -101,11 +101,13 @@ const AllPost = ({response}: { response: any }) => {
             <div className="mx-auto	">
                 {searchTerm === "" && (
                     <>
-                        <h1 className="text-4xl  text-black mb-12 font-bold">
+                        <h1 className="text-4xl  text-black mb-2 font-bold">
                             Most Popular
                         </h1>
                         {response?.map((result: Result, key: number) => (
-                            <div key={key} className="mb-12">
+                            <div key={key}
+                                 className="border-dashed border-b-2 py-4 pb-4"
+                            >
                                 <div className="text-black">
                                     <div
                                         className="text-lg cursor-pointer hover:underline font-bold"
@@ -136,18 +138,18 @@ const AllPost = ({response}: { response: any }) => {
                 )}
                 {searchTerm && (
                     <>
-                        <h1 className="text-4xl font-bold text-black mb-12 font-serif">
+                        <h1 className="text-4xl font-bold text-black mb-2">
                             All Posts
                         </h1>
                         {filteredAllPosts.map((result: any, key: number) => (
-                            <div key={key} className="mb-12">
+                            <div key={key} className="border-dashed border-b-2 py-4 pb-4">
                                 <div className="text-black">
-                                    <div className="text-2xl text-link font-bold cursor-pointer hover:underline">
+                                    <div className="text-lg cursor-pointer hover:underline font-bold">
                                         <Link
                                             href={`/blog/${result?.properties?.slug?.rich_text[0]?.text?.content}`}
                                         >
                                             <Highlighter
-                                                highlightClassName="text-lime-500"
+                                                highlightClassName=""
                                                 className=""
                                                 searchWords={searchTerm?.split(
                                                     " "
@@ -163,7 +165,7 @@ const AllPost = ({response}: { response: any }) => {
                                     </div>
                                     <div>
                                         <Highlighter
-                                            highlightClassName="text-lime-500"
+                                            highlightClassName="text-gray-500"
                                             className=""
                                             searchWords={searchTerm.split(" ")}
                                             autoEscape={true}
@@ -181,7 +183,25 @@ const AllPost = ({response}: { response: any }) => {
                             </div>
                         ))}
                         {filteredAllPosts.length === 0 && (
-                            <p> No posts found. </p>
+                            <div className="flex flex-col items-center justify-center mt-10">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-16 w-16 text-gray-400 mb-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M9 14l2-2m0 0l2-2m-2 2l2 2m-2-2v6m0-6H5m14 0h-4m4 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                <p className="text-gray-500 text-lg font-medium">
+                                    No posts found. Try searching for something else.
+                                </p>
+                            </div>
                         )}
                     </>
                 )}
