@@ -87,7 +87,7 @@ export const getStaticPaths = async () => {
     const allPosts = await getAllPosts();
     return {
         paths: allPosts.map((p: any) => ({
-            params: { slug: p.properties.slug.rich_text[0].plain_text },
+            params: { slug: p.properties.slug.rich_text[0]?.plain_text },
         })),
         fallback: "false",
     };
