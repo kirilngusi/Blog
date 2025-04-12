@@ -26,7 +26,7 @@ Router.events.on('routeChangeError', () => NProgress.done());
 
 function MyApp({ Component, pageProps }: AppProps) {
     useEffect(() => {
-        ReactGA.initialize("G-KCMPTVY7L2");
+        ReactGA.initialize("G-095Z4SJ71C");
 
         ReactGA.send({ hitType: "pageview", page: window.location.pathname });
 
