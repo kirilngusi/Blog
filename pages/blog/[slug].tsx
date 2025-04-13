@@ -85,11 +85,22 @@ export default singlePost;
 
 export const getStaticPaths = async () => {
     const allPosts = await getAllPosts();
+    const slugMapping = allPosts.map((p: any) => {
+        if (!p.properties.slug.rich_text[0]?.plain_text.toString()) {
+            //fallback to 404 page
+            return {
+                params: {slug: "404-not-found"},
+            };
+        }
+        return{
+            params: {
+                slug: p.properties.slug.rich_text[0]?.plain_text.toString()
+            }
+        }
+    });
     return {
-        paths: allPosts.map((p: any) => ({
-            params: { slug: p.properties.slug.rich_text[0]?.plain_text },
-        })),
-        fallback: "false",
+        paths: slugMapping,
+        fallback: false,
     };
 };
 
