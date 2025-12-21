@@ -62,9 +62,7 @@ const handleClick = () => {
 }
 
 const AllPost = ({response}: { response: any }) => {
-    // console.log(response);
     const [searchTerm, setSearchTerm] = useState("");
-
     const filteredAllPosts =
         searchTerm === ""
             ? response
@@ -114,7 +112,7 @@ const AllPost = ({response}: { response: any }) => {
                                         onClick={handleClick}
                                     >
                                         <Link
-                                            href={`/blog/${result?.properties?.slug?.rich_text[0]?.text?.content}`}
+                                            href={`/blog/${result?.properties?.slug?.rich_text[0]?.text?.content.trim()}`}
                                         >
                                             {
                                                 result?.properties?.Title?.title[0]

@@ -26,13 +26,12 @@ const Modal = dynamic(
 );
 
 const singlePost = ({ blocks }: { blocks: any }) => {
-    // console.log(blocks)
     return (
         <div className="container mx-auto max-w-3xl px-1 lg:max-w-5xl">
             <NotionRenderer
                 components={{
                     Code,
-                    // Collection,
+                    Collection,
                     Equation,
                     Modal,
                     Pdf,
@@ -94,7 +93,7 @@ export const getStaticPaths = async () => {
         }
         return{
             params: {
-                slug: p.properties.slug.rich_text[0]?.plain_text.toString()
+                slug: p.properties.slug.rich_text[0]?.plain_text.toString().trim()
             }
         }
     });
@@ -117,7 +116,6 @@ export const getStaticProps = async ({ params }: { params: any }) => {
     const notion = new NotionAPI();
     const blocks = await notion.getPage(post.id);
 
-    // console.log(posts)
     return {
         props: { blocks },
         revalidate: 60,

@@ -20,6 +20,8 @@ export const getAllPosts = async (slug?: string) => {
       dbQuery.filter.and.push({ property: 'slug', rich_text: { equals: slug } })
     }
 
+    console.log(dbQuery)
+    console.log(slug)
     const response = await notion.databases.query(dbQuery)
     return response.results
 

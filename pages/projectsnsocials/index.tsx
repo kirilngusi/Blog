@@ -37,7 +37,7 @@ const socialLinks = [
     },
     {
         name: "Linkedin",
-        link: "https://www.linkedin.com/in/vuong-tuan-anh-300431208/",
+        link: "https://www.linkedin.com/in/tuananhvuong02/",
         icon: SiLinkedin,
         apiUrl: "#",
         color: "#00a669",
