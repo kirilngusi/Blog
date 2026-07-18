@@ -8,6 +8,7 @@ import { FiMail, FiArrowRight } from "react-icons/fi";
 
 import SEO from "../components/SEO";
 import JumpGame from "../components/JumpGame";
+import FollowEyes from "../components/FollowEyes";
 import { siteConfig } from "../lib/siteConfig";
 import { about, experiences, skills, education } from "../lib/data/resume";
 
@@ -26,13 +27,16 @@ const Home: NextPage = () => {
             <div className="mx-auto flex max-w-3xl flex-col px-6 text-black dark:text-dark-50">
                 {/* Hero */}
                 <section className="animate-fade-up">
-                    <h1 className="mb-4 mt-6 text-4xl font-bold sm:text-5xl">
-                        <Typical
-                            steps={["Hi,", 1000, "Kiril Here 👏", 1000]}
-                            loop={Infinity}
-                            wrapper="span"
-                        />
-                    </h1>
+                    <div className="mb-4 mt-6 flex items-center gap-4">
+                        <FollowEyes />
+                        <h1 className="text-4xl font-bold sm:text-5xl">
+                            <Typical
+                                steps={["Hi,", 1000, "Kiril Here 👏", 1000]}
+                                loop={Infinity}
+                                wrapper="span"
+                            />
+                        </h1>
+                    </div>
 
                     <p className="mb-4 text-lg font-semibold text-accent-600 dark:text-accent-400">
                         {about.headline}
