@@ -26,6 +26,12 @@ export default function Document() {
                     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap"
                     rel="stylesheet"
                 />
+                <link
+                    rel="alternate"
+                    type="application/rss+xml"
+                    title="Kiril — Blog RSS"
+                    href="/rss.xml"
+                />
             </Head>
             <body>
                 <script dangerouslySetInnerHTML={{ __html: themeScript }} />
