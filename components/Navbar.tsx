@@ -1,9 +1,10 @@
-import { Menu, Transition, Switch } from "@headlessui/react";
-import { Fragment, useState } from "react";
-import { FiMenu, FiRss } from "react-icons/fi";
+import { Menu, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import { FiMenu } from "react-icons/fi";
 
-import Image from "next/image";
 import Link from "next/link";
+
+import ThemeToggle from "./ThemeToggle";
 
 const navigations = [
     {
@@ -26,42 +27,26 @@ const MenuItemLink = (props: { href: string; children: React.ReactNode }) => {
 };
 
 const Navbar = () => {
-    const [enabled, setEnabled] = useState(false);
     return (
-        <header className="primary-text z-10 flex items-center px-4 py-3 justify-between sticky top-0 backdrop-blur-lg text-gray-500">
+        <header className="z-20 flex items-center px-4 py-3 justify-between sticky top-0 backdrop-blur-lg text-gray-500 border-b border-transparent dark:text-dark-100">
             <Link href="/">
-                {/* <Image
-                    className="bg-white	 duration-150 cursor-pointer hover:opacity-80"
-                    src="/images/home-1.png"
-                    alt="home"
-                    width={42}
-                    height={42}
-                /> */}
-                <h1 className=" duration-150 cursor-pointer hover:opacity-80">Home</h1>
+                <h1 className="font-serif text-lg text-black duration-150 cursor-pointer hover:text-accent-600 dark:text-white dark:hover:text-accent-400">
+                    Kiril
+                </h1>
             </Link>
 
-            <div className="flex items-center space-x-4 ">
-                <nav className="hidden items-center space-x-2 sm:flex">
+            <div className="flex items-center space-x-2 ">
+                <nav className="hidden items-center space-x-1 sm:flex">
                     {navigations.map((n, i) => (
                         <Link href={n.link} key={i} passHref>
-                            <a className="nav-links p-3">{n.name}</a>
+                            <a className="nav-links rounded-lg p-3 transition-colors hover:text-accent-600 dark:hover:text-accent-400">
+                                {n.name}
+                            </a>
                         </Link>
                     ))}
-                    {/* <Switch
-                        checked={enabled}
-                        onChange={setEnabled}
-                        className={`${
-                            enabled ? "bg-blue-600" : "bg-gray-200"
-                        } relative inline-flex h-6 w-11 items-center rounded-full`}
-                    >
-                        <span className="sr-only">Enable notifications</span>
-                        <span
-                            className={`${
-                                enabled ? "translate-x-6" : "translate-x-1"
-                            } inline-block h-4 w-4 transform rounded-full bg-white`}
-                        />
-                    </Switch> */}
                 </nav>
+
+                <ThemeToggle />
 
                 <div className="block sm:hidden">
                     <Menu as="div" className="relative text-left">
@@ -77,11 +62,13 @@ const Navbar = () => {
                             leaveFrom="transform scale-100 opacity-100"
                             leaveTo="transform scale-95 opacity-0"
                         >
-                            <Menu.Items className="bg-white text-black absolute right-0 mt-2 w-40 origin-top-right rounded shadow-lg grid divide-y  dark:bg-dark-700 focus:outline-none ">
+                            <Menu.Items className="bg-white text-black absolute right-0 mt-2 w-40 origin-top-right rounded-lg shadow-lg grid divide-y divide-light-800 border border-light-800 dark:divide-dark-600 dark:border-dark-600 dark:bg-dark-700 dark:text-dark-50 focus:outline-none ">
                                 {navigations.map((n, i) => (
                                     <Menu.Item key={i}>
                                         <MenuItemLink href={n.link}>
-                                            <div className="p-2">{n.name}</div>
+                                            <div className="p-3 transition-colors hover:text-accent-600 dark:hover:text-accent-400">
+                                                {n.name}
+                                            </div>
                                         </MenuItemLink>
                                     </Menu.Item>
                                 ))}

@@ -1,5 +1,5 @@
 {
-  "name": "blog",
+  "name": "kirilngusi-blog",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,6 +16,7 @@
     "@notionhq/client": "^1.0.4",
     "@types/react-highlight-words": "^0.16.4",
     "dayjs": "^1.11.2",
+    "framer-motion": "^10.18.0",
     "next": "12.1.6",
     "notion-client": "^6.12.9",
     "notion-types": "^6.12.6",
