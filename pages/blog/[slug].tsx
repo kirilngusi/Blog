@@ -1,7 +1,7 @@
 import React from "react";
 import { NotionRenderer } from "react-notion-x";
 
-import { getAllPosts, getBlocks, getPage, test } from "../../lib/notion";
+import { getAllPosts, normalizeRecordMap } from "../../lib/notion";
 import { NotionAPI } from "notion-client";
 
 import { Collection } from "react-notion-x/build/third-party/collection";
@@ -114,7 +114,7 @@ export const getStaticProps = async ({ params }: { params: any }) => {
     }
     
     const notion = new NotionAPI();
-    const blocks = await notion.getPage(post.id);
+    const blocks = normalizeRecordMap(await notion.getPage(post.id));
 
     return {
         props: { blocks },

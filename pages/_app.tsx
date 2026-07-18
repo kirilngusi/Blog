@@ -3,7 +3,9 @@ import "../styles/globals.css";
 import Layout from "../components/Layout";
 
 import type { AppProps } from "next/app";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
+
+import { AnimatePresence, motion } from "framer-motion";
 
 import NProgress from 'nprogress';
 import "nprogress/nprogress.css";
@@ -25,6 +27,7 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 function MyApp({ Component, pageProps }: AppProps) {
+    const router = useRouter();
     useEffect(() => {
         ReactGA.initialize("G-095Z4SJ71C");
 
@@ -43,24 +46,27 @@ function MyApp({ Component, pageProps }: AppProps) {
         <>
         <Head>
             <meta charSet="UTF-8" />
-            <meta name="keywords" content="titla, meta, nextjs" />
-            <meta name="author" content="KirilDev" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            />
             <link rel="icon" href="/favicon.ico" />
             <link rel="apple-touch-icon" href="/favicon.ico" />
             <link rel="manifest" href="/manifest.json" />
-            <meta name="theme-color" content="#000000" />
-            <meta name="description" content="KirilNgusi's personal website" />
-            <meta name="keywords" content="KirilNgusi, Kiril, KirilNgusi's personal website" />
-            <meta name="author" content="KirilNgusi" />
-            <meta property="og:title" content="KirilNgusi" />
-            <meta property="og:description" content="KirilNgusi's personal website" />
-            <meta property="og:image" content="/favicon.ico" />
-            <meta property="og:url" content="https://kirilngusi.vercel.app/" />
-            <meta property="og:type" content="website" />
+            <meta name="theme-color" content="#059669" />
         </Head>
         <Layout>
-            <Component {...pageProps} />
+            <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                    key={router.route}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                >
+                    <Component {...pageProps} />
+                </motion.div>
+            </AnimatePresence>
         </Layout>
         </>
     );

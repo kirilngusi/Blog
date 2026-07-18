@@ -1,0 +1,16 @@
+{
+    "name": "Kiril — Software Engineer",
+    "short_name": "Kiril",
+    "description": "Personal website & portfolio of Vương Tuấn Anh (Kiril), Backend Engineer (Golang).",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0d1117",
+    "theme_color": "#059669",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "any",
+            "type": "image/x-icon"
+        }
+    ]
+}
