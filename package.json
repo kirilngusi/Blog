@@ -12,11 +12,13 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@giscus/react": "^3.1.0",
     "@headlessui/react": "^1.6.4",
     "@notionhq/client": "^1.0.4",
     "@types/react-highlight-words": "^0.16.4",
     "dayjs": "^1.11.2",
     "framer-motion": "^10.18.0",
+    "fuse.js": "^7.5.0",
     "next": "12.1.6",
     "notion-client": "^6.12.9",
     "notion-types": "^6.12.6",

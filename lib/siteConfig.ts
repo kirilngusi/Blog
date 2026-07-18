@@ -17,4 +17,13 @@ export const siteConfig = {
         facebook: "https://www.facebook.com/imkiril",
     },
     twitterHandle: "@kiril0505",
+    // Giscus comments (GitHub-login based). Fill these from https://giscus.app
+    // after enabling Discussions on a public repo and installing the giscus app.
+    // Leave repoId empty to show a setup hint instead of the widget.
+    giscus: {
+        repo: "kirilngusi/Blog" as `${string}/${string}`,
+        repoId: "R_kgDOHbGiJg",
+        category: "Announcements",
+        categoryId: "DIC_kwDOHbGiJs4DBcPH",
+    },
 } as const;
