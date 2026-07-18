@@ -65,10 +65,15 @@ module.exports = {
                     "0%, 100%": { transform: "translateY(0)" },
                     "50%": { transform: "translateY(-6px)" },
                 },
+                blink: {
+                    "0%, 92%, 100%": { transform: "scaleY(1)" },
+                    "96%": { transform: "scaleY(0.1)" },
+                },
             },
             animation: {
                 "fade-up": "fade-up 0.5s ease-out both",
                 float: "float 3s ease-in-out infinite",
+                blink: "blink 4.5s ease-in-out infinite",
             },
         },
     },
