@@ -69,11 +69,25 @@ module.exports = {
                     "0%, 92%, 100%": { transform: "scaleY(1)" },
                     "96%": { transform: "scaleY(0.1)" },
                 },
+                heart: {
+                    "0%": {
+                        transform:
+                            "translate(-50%, -50%) translateY(0) scale(0.5)",
+                        opacity: "0",
+                    },
+                    "15%": { opacity: "1" },
+                    "100%": {
+                        transform:
+                            "translate(-50%, -50%) translateY(-90px) translateX(var(--dx, 0)) scale(1.15)",
+                        opacity: "0",
+                    },
+                },
             },
             animation: {
                 "fade-up": "fade-up 0.5s ease-out both",
                 float: "float 3s ease-in-out infinite",
                 blink: "blink 4.5s ease-in-out infinite",
+                heart: "heart 1.1s ease-out forwards",
             },
         },
     },
