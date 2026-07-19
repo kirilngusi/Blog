@@ -14,9 +14,10 @@ export const siteConfig = {
     email: "vuongtuan1211@gmail.com",
     locale: "en",
     author: "Vương Tuấn Anh (Kiril / KirilNgusi)",
-    // Google Search Console verification (HTML-tag method).
-    // When the domain changes, update `url` above and re-verify this code.
-    googleSiteVerification: "7uXD6b7YvaxlGSSiwlwmN2nKNWsylzutKmIhWN95_Ac",
+    // Google Search Console verification (HTML-tag method). Set via env so it
+    // can change without a code commit — see NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION.
+    googleSiteVerification:
+        process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "fIiKf12DOSdpCsm0rOx38e5et19rlOBo8yz9Yq7imFs",
     socials: {
         github: "https://github.com/kirilngusi",
         linkedin: "https://www.linkedin.com/in/tuananhvuong02/",
