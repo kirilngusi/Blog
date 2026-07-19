@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
+import { useState } from "react";
 
-import Typical from "react-typical";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
@@ -8,6 +8,7 @@ import { SiGithub, SiLinkedin } from "react-icons/si";
 import { FiMail, FiArrowRight } from "react-icons/fi";
 
 import SEO from "../components/SEO";
+import Typewriter from "../components/Typewriter";
 import { siteConfig } from "../lib/siteConfig";
 import { about, experiences, skills, education } from "../lib/data/resume";
 
@@ -20,6 +21,10 @@ const HeroScene3D = dynamic(() => import("../components/HeroScene"), {
     ),
 });
 
+const RoamingRobot3D = dynamic(() => import("../components/RoamingRobot"), {
+    ssr: false,
+});
+
 const sectionTitle =
     "font-serif text-2xl font-bold text-black dark:text-white mb-6";
 const tag =
@@ -28,24 +33,47 @@ const iconLink =
     "flex items-center gap-2 rounded-lg border border-light-800 px-3 py-2 text-sm text-gray-600 transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300";
 
 const Home: NextPage = () => {
+    const [roam, setRoam] = useState(false);
+
     return (
         <>
             <SEO />
+
+            {roam && <RoamingRobot3D onExit={() => setRoam(false)} />}
 
             <div className="mx-auto max-w-5xl px-6 text-black dark:text-dark-50">
                 {/* Hero: 3D robot left, text right */}
                 <section className="grid animate-fade-up items-center gap-10 py-6 lg:grid-cols-2 lg:py-8">
                     <div className="relative order-2 h-[320px] sm:h-[400px] lg:order-1">
-                        <HeroScene3D />
+                        <button
+                            type="button"
+                            onClick={() => setRoam((v) => !v)}
+                            className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-lg border border-light-800 bg-white/70 px-3 py-1.5 text-xs font-medium text-gray-600 backdrop-blur transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:bg-dark-700/70 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300"
+                        >
+                            {roam ? "✕ Exit roam" : "🚶 Roam the page"}
+                        </button>
+                        {roam ? (
+                            <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+                                <span className="animate-float text-4xl">🚶</span>
+                                <p className="text-sm text-gray-500 dark:text-dark-200">
+                                    Roaming the page…
+                                </p>
+                            </div>
+                        ) : (
+                            <HeroScene3D />
+                        )}
                     </div>
 
                     <div className="order-1 lg:order-2">
                         <h1 className="text-4xl font-bold sm:text-5xl">
-                            <Typical
-                                steps={["Hi,", 1000, "Kiril Here 👏", 1000]}
-                                loop={Infinity}
-                                wrapper="span"
-                            />
+                            Hi, I&apos;m{" "}
+                            <Typewriter
+                                text="Kiril"
+                                className="bg-gradient-to-r from-accent-500 to-cyan-400 bg-clip-text text-transparent"
+                            />{" "}
+                            <span className="inline-block origin-[70%_70%] animate-wave">
+                                👋
+                            </span>
                         </h1>
 
                         <p className="mb-4 mt-3 text-lg font-semibold text-accent-600 dark:text-accent-400">

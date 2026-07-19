@@ -107,12 +107,21 @@ const pad =
 const kbd =
     "rounded border border-light-800 px-1.5 py-0.5 font-mono dark:border-dark-500";
 
-type Heart = { id: number; x: number; y: number; dx: number; emoji: string };
+type Heart = {
+    id: number;
+    x: number;
+    y: number;
+    dx: number;
+    emoji: string;
+    delay?: number;
+    big?: boolean;
+};
 
 const HeroScene = () => {
     const [action, setAction] = useState<OneShot>(null);
     const [isTouch, setIsTouch] = useState(false);
     const [hearts, setHearts] = useState<Heart[]>([]);
+    const rootRef = useRef<HTMLDivElement>(null);
     const counter = useRef(0);
     const heartId = useRef(0);
     const dir = useRef<Dir>({ f: false, b: false, l: false, r: false });
@@ -142,6 +151,29 @@ const HeroScene = () => {
     const removeHeart = (id: number) =>
         setHearts((h) => h.filter((x) => x.id !== id));
 
+    // Heart button: robot raises its hand + a burst of golden hearts.
+    const loveBurst = () => {
+        trigger("ThumbsUp");
+        const el = rootRef.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const cx = r.width / 2;
+        const cy = r.height * 0.6;
+        const batch: Heart[] = Array.from({ length: 12 }, () => {
+            heartId.current += 1;
+            return {
+                id: heartId.current,
+                x: cx + (Math.random() * 130 - 65),
+                y: cy + (Math.random() * 30 - 15),
+                dx: Math.random() * 80 - 40,
+                emoji: Math.random() < 0.25 ? "✨" : "💛",
+                delay: Math.random() * 260,
+                big: true,
+            };
+        });
+        setHearts((h) => [...h, ...batch]);
+    };
+
     useEffect(() => {
         setIsTouch(window.matchMedia("(pointer: coarse)").matches);
 
@@ -154,12 +186,18 @@ const HeroScene = () => {
                     el.isContentEditable)
             );
         };
+        // Arrow keys are IME-safe; WASD may be swallowed by a Vietnamese IME.
         const codeMap: Record<string, keyof Dir> = {
             KeyW: "f",
+            ArrowUp: "f",
             KeyS: "b",
+            ArrowDown: "b",
             KeyA: "l",
+            ArrowLeft: "l",
             KeyD: "r",
+            ArrowRight: "r",
         };
+        const lastDown: Record<string, number> = {};
         const down = (e: KeyboardEvent) => {
             if (isTyping(e.target)) return;
             if (e.code === "Space") {
@@ -168,7 +206,11 @@ const HeroScene = () => {
                 return;
             }
             const m = codeMap[e.code];
-            if (m) dir.current[m] = true;
+            if (m) {
+                e.preventDefault();
+                dir.current[m] = true;
+                lastDown[m] = performance.now();
+            }
         };
         const up = (e: KeyboardEvent) => {
             const m = codeMap[e.code];
@@ -177,10 +219,20 @@ const HeroScene = () => {
         const clear = () => {
             dir.current = { f: false, b: false, l: false, r: false };
         };
+        // Failsafe: if a held key stops repeating (IME ate its keyup), release it.
+        const failsafe = window.setInterval(() => {
+            const now = performance.now();
+            (["f", "b", "l", "r"] as (keyof Dir)[]).forEach((k) => {
+                if (dir.current[k] && now - (lastDown[k] || 0) > 600) {
+                    dir.current[k] = false;
+                }
+            });
+        }, 80);
         window.addEventListener("keydown", down);
         window.addEventListener("keyup", up);
         window.addEventListener("blur", clear);
         return () => {
+            window.clearInterval(failsafe);
             window.removeEventListener("keydown", down);
             window.removeEventListener("keyup", up);
             window.removeEventListener("blur", clear);
@@ -206,6 +258,7 @@ const HeroScene = () => {
 
     return (
         <div
+            ref={rootRef}
             className="relative h-full w-full"
             style={{ touchAction: "none" }}
             onPointerEnter={(e) => {
@@ -252,11 +305,14 @@ const HeroScene = () => {
                     <span
                         key={h.id}
                         onAnimationEnd={() => removeHeart(h.id)}
-                        className="absolute animate-heart text-2xl"
+                        className={`absolute animate-heart ${
+                            h.big ? "text-3xl" : "text-2xl"
+                        }`}
                         style={{
                             left: h.x,
                             top: h.y,
                             ["--dx" as any]: `${h.dx}px`,
+                            animationDelay: h.delay ? `${h.delay}ms` : undefined,
                         }}
                     >
                         {h.emoji}
@@ -274,6 +330,9 @@ const HeroScene = () => {
                 </button>
                 <button type="button" className={btn} onClick={() => trigger("Jump")} aria-label="Jump">
                     ⤴
+                </button>
+                <button type="button" className={btn} onClick={loveBurst} aria-label="Love">
+                    💛
                 </button>
             </div>
 
@@ -304,6 +363,8 @@ const HeroScene = () => {
             {!isTouch && (
                 <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap text-[11px] text-gray-500 dark:text-dark-200">
                     <kbd className={kbd}>WASD</kbd>
+                    <span>/</span>
+                    <kbd className={kbd}>↑↓←→</kbd>
                     <span>move</span>
                     <span className="opacity-40">·</span>
                     <kbd className={kbd}>Space</kbd>
