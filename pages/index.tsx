@@ -5,7 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 
 import { SiGithub, SiLinkedin } from "react-icons/si";
-import { FiMail, FiArrowRight } from "react-icons/fi";
+import { FiMail, FiArrowRight, FiFolder, FiBookOpen } from "react-icons/fi";
 
 import SEO from "../components/SEO";
 import Typewriter from "../components/Typewriter";
@@ -45,10 +45,11 @@ const Home: NextPage = () => {
                 {/* Hero: 3D robot left, text right */}
                 <section className="grid animate-fade-up items-center gap-10 py-6 lg:grid-cols-2 lg:py-8">
                     <div className="relative order-2 h-[320px] sm:h-[400px] lg:order-1">
+                        {/* Roam is a desktop-only feature (hidden on mobile). */}
                         <button
                             type="button"
                             onClick={() => setRoam((v) => !v)}
-                            className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-lg border border-light-800 bg-white/70 px-3 py-1.5 text-xs font-medium text-gray-600 backdrop-blur transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:bg-dark-700/70 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300"
+                            className="absolute left-3 top-3 z-10 hidden items-center gap-1.5 rounded-lg border border-light-800 bg-white/70 px-3 py-1.5 text-xs font-medium text-gray-600 backdrop-blur transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:bg-dark-700/70 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300 sm:flex"
                         >
                             {roam ? "✕ Exit roam" : "🚶 Roam the page"}
                         </button>
@@ -188,20 +189,29 @@ const Home: NextPage = () => {
                         </div>
                     </section>
 
-                    {/* Links */}
-                    <section className="mb-16 mt-14 flex flex-wrap gap-4">
-                        <Link href="/projectsnsocials">
-                            <a className="group inline-flex items-center gap-1 font-semibold text-accent-600 hover:underline dark:text-accent-400">
-                                Projects &amp; Socials
-                                <FiArrowRight className="transition-transform group-hover:translate-x-1" />
-                            </a>
-                        </Link>
-                        <Link href="/blog">
-                            <a className="group inline-flex items-center gap-1 font-semibold text-accent-600 hover:underline dark:text-accent-400">
-                                Read the Blog
-                                <FiArrowRight className="transition-transform group-hover:translate-x-1" />
-                            </a>
-                        </Link>
+                    {/* Explore */}
+                    <section className="mb-16 mt-14">
+                        <h2 className={sectionTitle}>Explore</h2>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <Link href="/blog">
+                                <a className="group flex items-center gap-3 rounded-xl border border-light-800 p-4 transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
+                                    <FiBookOpen className="flex-shrink-0 text-accent-600 dark:text-accent-400" size={20} />
+                                    <span className="flex-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
+                                        Read the Blog
+                                    </span>
+                                    <FiArrowRight className="flex-shrink-0 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-accent-600 dark:group-hover:text-accent-400" />
+                                </a>
+                            </Link>
+                            <Link href="/projectsnsocials">
+                                <a className="group flex items-center gap-3 rounded-xl border border-light-800 p-4 transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
+                                    <FiFolder className="flex-shrink-0 text-accent-600 dark:text-accent-400" size={20} />
+                                    <span className="flex-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
+                                        Projects &amp; Socials
+                                    </span>
+                                    <FiArrowRight className="flex-shrink-0 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-accent-600 dark:group-hover:text-accent-400" />
+                                </a>
+                            </Link>
+                        </div>
                     </section>
                 </div>
             </div>

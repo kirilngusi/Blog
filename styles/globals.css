@@ -59,3 +59,16 @@ a {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* NProgress top loading bar — match the accent tone, drop the crooked spinner.
+   Uses !important because nprogress.css is imported after globals.css in _app. */
+#nprogress .bar {
+    background: #10b981 !important;
+    height: 2.5px !important;
+}
+#nprogress .peg {
+    box-shadow: 0 0 10px #10b981, 0 0 6px #10b981 !important;
+}
+#nprogress .spinner {
+    display: none !important;
+}

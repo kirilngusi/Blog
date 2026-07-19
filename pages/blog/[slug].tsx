@@ -2,7 +2,12 @@ import React from "react";
 import { NotionRenderer } from "react-notion-x";
 
 import { getAllPosts, normalizeRecordMap } from "../../lib/notion";
-import { toPostMeta, PostMeta, formatDate } from "../../lib/posts";
+import {
+    toPostMeta,
+    PostMeta,
+    formatDate,
+    readingTimeMinutes,
+} from "../../lib/posts";
 import { NotionAPI } from "notion-client";
 
 import { Collection } from "react-notion-x/build/third-party/collection";
@@ -11,7 +16,7 @@ import { Pdf } from "react-notion-x/build/third-party/pdf";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiClock } from "react-icons/fi";
 
 import SEO from "../../components/SEO";
 import Comments from "../../components/Comments";
@@ -30,7 +35,15 @@ const Modal = dynamic(
     { ssr: false }
 );
 
-const SinglePost = ({ blocks, meta }: { blocks: any; meta: PostMeta }) => {
+const SinglePost = ({
+    blocks,
+    meta,
+    readingTime,
+}: {
+    blocks: any;
+    meta: PostMeta;
+    readingTime: number;
+}) => {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
@@ -57,8 +70,11 @@ const SinglePost = ({ blocks, meta }: { blocks: any; meta: PostMeta }) => {
                 <h1 className="font-serif text-3xl font-bold text-black dark:text-white sm:text-4xl">
                     {meta.title}
                 </h1>
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-dark-200">
+                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-500 dark:text-dark-200">
                     {meta.date && <time>{formatDate(meta.date)}</time>}
+                    <span className="inline-flex items-center gap-1">
+                        <FiClock size={13} /> {readingTime} min read
+                    </span>
                     {meta.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
                             {meta.tags.map((t) => (
@@ -214,9 +230,10 @@ export const getStaticProps = async ({ params }: { params: any }) => {
     const meta = toPostMeta(post);
     const notion = new NotionAPI();
     const blocks = normalizeRecordMap(await notion.getPage(post.id));
+    const readingTime = readingTimeMinutes(blocks);
 
     return {
-        props: { blocks, meta },
+        props: { blocks, meta, readingTime },
         revalidate: 60,
     };
 };

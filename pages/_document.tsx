@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from "next/document";
+import { siteConfig } from "../lib/siteConfig";
 
 // Runs before paint to avoid a flash of the wrong theme (FOUC).
 const themeScript = `
@@ -32,6 +33,12 @@ export default function Document() {
                     title="Kiril — Blog RSS"
                     href="/rss.xml"
                 />
+                {siteConfig.googleSiteVerification && (
+                    <meta
+                        name="google-site-verification"
+                        content={siteConfig.googleSiteVerification}
+                    />
+                )}
             </Head>
             <body>
                 <script dangerouslySetInnerHTML={{ __html: themeScript }} />
