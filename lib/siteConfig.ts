@@ -1,15 +1,22 @@
 export const siteConfig = {
     name: "Kiril",
     fullName: "Vương Tuấn Anh",
-    title: "Kiril — Software Engineer",
+    title: "Kiril · KirilNgusi — Backend Engineer (Golang)",
     role: "Backend Engineer (Golang)",
     description:
-        "Software Engineer with 3+ years of experience, focused on backend development with Golang and distributed systems — high-throughput data pipelines, microservices, and real-time processing.",
+        "Kiril (KirilNgusi) — Backend Engineer with 3+ years focused on Golang and distributed systems: high-throughput data pipelines, microservices, and real-time processing.",
+    // Name variants so searching any of these surfaces the site.
+    alternateNames: ["KirilNgusi", "Kiril Ngusi", "Vương Tuấn Anh"],
+    keywords:
+        "kirilngusi, KirilNgusi, Kiril, Vương Tuấn Anh, backend engineer, golang developer, distributed systems, microservices, Vietnam",
     url: "https://kirilngusi.vercel.app",
     ogImage: "/images/home.png",
     email: "vuongtuan1211@gmail.com",
     locale: "en",
-    author: "Vương Tuấn Anh (Kiril)",
+    author: "Vương Tuấn Anh (Kiril / KirilNgusi)",
+    // Google Search Console verification (HTML-tag method).
+    // When the domain changes, update `url` above and re-verify this code.
+    googleSiteVerification: "7uXD6b7YvaxlGSSiwlwmN2nKNWsylzutKmIhWN95_Ac",
     socials: {
         github: "https://github.com/kirilngusi",
         linkedin: "https://www.linkedin.com/in/tuananhvuong02/",

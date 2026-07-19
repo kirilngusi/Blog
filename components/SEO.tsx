@@ -28,24 +28,79 @@ const SEO = ({
         ? image
         : `${siteConfig.url}${image}`;
 
-    const jsonLd =
-        type === "website" && path === "/"
-            ? {
-                  "@context": "https://schema.org",
+    const isHome = type === "website" && path === "/";
+    const isArticle = type === "article";
+
+    // Person schema (identity) on the homepage — helps name queries resolve.
+    const personLd = isHome
+        ? {
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: siteConfig.fullName,
+              alternateName: [siteConfig.name, ...siteConfig.alternateNames],
+              description: siteConfig.description,
+              url: siteConfig.url,
+              image: `${siteConfig.url}${siteConfig.ogImage}`,
+              jobTitle: siteConfig.role,
+              email: `mailto:${siteConfig.email}`,
+              sameAs: Object.values(siteConfig.socials),
+          }
+        : null;
+
+    const articleLd = isArticle
+        ? {
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
+              headline: title,
+              description,
+              image: absoluteImage,
+              datePublished: publishedTime,
+              dateModified: publishedTime,
+              author: {
                   "@type": "Person",
                   name: siteConfig.fullName,
-                  alternateName: siteConfig.name,
                   url: siteConfig.url,
-                  jobTitle: siteConfig.role,
-                  email: `mailto:${siteConfig.email}`,
-                  sameAs: Object.values(siteConfig.socials),
-              }
-            : null;
+              },
+              publisher: { "@type": "Person", name: siteConfig.fullName },
+              mainEntityOfPage: { "@type": "WebPage", "@id": url },
+              keywords: tags?.join(", "),
+          }
+        : null;
+
+    const breadcrumbLd = isArticle
+        ? {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                  {
+                      "@type": "ListItem",
+                      position: 1,
+                      name: "Home",
+                      item: siteConfig.url,
+                  },
+                  {
+                      "@type": "ListItem",
+                      position: 2,
+                      name: "Blog",
+                      item: `${siteConfig.url}/blog`,
+                  },
+                  {
+                      "@type": "ListItem",
+                      position: 3,
+                      name: title,
+                      item: url,
+                  },
+              ],
+          }
+        : null;
+
+    const schemas = [personLd, articleLd, breadcrumbLd].filter(Boolean);
 
     return (
         <Head>
             <title>{pageTitle}</title>
             <meta name="description" content={description} />
+            <meta name="keywords" content={siteConfig.keywords} />
             <meta name="author" content={siteConfig.author} />
             <link rel="canonical" href={url} />
             {noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -58,7 +113,10 @@ const SEO = ({
             <meta property="og:site_name" content={siteConfig.name} />
             <meta property="og:image" content={absoluteImage} />
             {publishedTime && (
-                <meta property="article:published_time" content={publishedTime} />
+                <meta
+                    property="article:published_time"
+                    content={publishedTime}
+                />
             )}
             {tags?.map((tag) => (
                 <meta property="article:tag" content={tag} key={tag} />
@@ -71,12 +129,13 @@ const SEO = ({
             <meta name="twitter:image" content={absoluteImage} />
             <meta name="twitter:creator" content={siteConfig.twitterHandle} />
 
-            {jsonLd && (
+            {schemas.map((s, i) => (
                 <script
+                    key={i}
                     type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
                 />
-            )}
+            ))}
         </Head>
     );
 };
