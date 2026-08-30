@@ -1,5 +1,6 @@
 import { Client } from "@notionhq/client";
 import { ListBlockChildrenResponse } from '@notionhq/client/build/src/api-endpoints'
+import { PostMeta, toPostMeta } from './posts'
 
 const notion: any = new Client({ auth: process.env.NOTION_API_KEY });
 
@@ -68,3 +69,13 @@ export const getBlocks = async (blockId: string) => {
     }
     return blocks
 }
+// Single entry point for "all published posts, normalized". Server-only: it
+// lives here rather than in lib/posts.ts so that client components importing
+// posts.ts (PostCard) never pull @notionhq/client into the browser bundle.
+export const getPostList = async (): Promise<PostMeta[]> => {
+    const rows = await getAllPosts();
+    const posts: PostMeta[] = rows.map(toPostMeta);
+    // A post with no slug has no reachable URL, so drop it here rather than let
+    // every list render a dead /blog/ link.
+    return posts.filter((p) => p.slug);
+};

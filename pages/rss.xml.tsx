@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 
-import { getAllPosts } from "../lib/notion";
-import { toPostMeta, PostMeta } from "../lib/posts";
+import { getPostList } from "../lib/notion";
+import { PostMeta } from "../lib/posts";
 import { siteConfig } from "../lib/siteConfig";
 
 const escapeXml = (unsafe: string) =>
@@ -22,7 +22,7 @@ const escapeXml = (unsafe: string) =>
 
 const buildRss = () => {
     return async () => {
-        const posts: PostMeta[] = (await getAllPosts()).map(toPostMeta);
+        const posts: PostMeta[] = await getPostList();
         const items = posts
             .map((p) => {
                 const url = `${siteConfig.url}/blog/${p.slug}`;

@@ -60,3 +60,50 @@ export const formatDate = (iso?: string): string => {
         day: "numeric",
     });
 };
+// ---------------------------------------------------------------------------
+// Shared post-list access + derivations. Every consumer (homepage, blog list,
+// tag pages, post page, RSS, sitemap) goes through these so they all see the
+// same normalized shape and the same ordering.
+// ---------------------------------------------------------------------------
+
+// Notion tags are free-text multi_select values ("Distributed Systems"), so
+// they need normalizing before they can appear in a URL.
+export const tagSlug = (tag: string): string =>
+    tag.trim().toLowerCase().replace(/\s+/g, "-");
+
+export const allTags = (posts: PostMeta[]): string[] => {
+    const set = new Set<string>();
+    posts.forEach((p) => p.tags.forEach((t) => set.add(t)));
+    return Array.from(set).sort();
+};
+
+// Posts sharing at least one tag, most tags in common first, then newest.
+export const relatedPosts = (
+    posts: PostMeta[],
+    current: PostMeta,
+    limit = 3
+): PostMeta[] =>
+    posts
+        .filter((p) => p.slug !== current.slug)
+        .map((p) => ({
+            post: p,
+            shared: p.tags.filter((t) => current.tags.includes(t)).length,
+        }))
+        .filter((x) => x.shared > 0)
+        .sort((a, b) => b.shared - a.shared || b.post.date.localeCompare(a.post.date))
+        .slice(0, limit)
+        .map((x) => x.post);
+
+// `posts` arrives sorted by Date descending (see lib/notion.ts), so the entry
+// after the current one is the older post.
+export const neighbors = (
+    posts: PostMeta[],
+    slug: string
+): { prev: PostMeta | null; next: PostMeta | null } => {
+    const i = posts.findIndex((p) => p.slug === slug);
+    if (i === -1) return { prev: null, next: null };
+    return {
+        prev: posts[i + 1] ?? null,
+        next: posts[i - 1] ?? null,
+    };
+};

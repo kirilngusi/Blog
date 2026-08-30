@@ -1,16 +1,16 @@
 import { GetServerSideProps } from "next";
 
-import { getAllPosts } from "../lib/notion";
-import { toPostMeta, PostMeta } from "../lib/posts";
+import { getPostList } from "../lib/notion";
+import { PostMeta, allTags, tagSlug } from "../lib/posts";
 import { siteConfig } from "../lib/siteConfig";
 
-const staticPaths = ["", "/blog", "/projectsnsocials"];
+const staticPaths = ["", "/blog", "/about", "/projectsnsocials"];
 
 const Sitemap = () => null;
 export default Sitemap;
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-    const posts: PostMeta[] = (await getAllPosts()).map(toPostMeta);
+    const posts: PostMeta[] = await getPostList();
 
     const urls = [
         ...staticPaths.map(
@@ -23,6 +23,11 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     <loc>${siteConfig.url}/blog/${p.slug}</loc>${
                 p.date ? `\n    <lastmod>${p.date}</lastmod>` : ""
             }
+  </url>`
+        ),
+        ...allTags(posts).map(
+            (t) => `  <url>
+    <loc>${siteConfig.url}/tags/${tagSlug(t)}</loc>
   </url>`
         ),
     ].join("\n");

@@ -1,7 +1,7 @@
 {
-    "name": "Kiril — Software Engineer",
+    "name": "Kiril's Blog",
     "short_name": "Kiril",
-    "description": "Personal website & portfolio of Vương Tuấn Anh (Kiril), Backend Engineer (Golang).",
+    "description": "Notes on backend engineering and distributed systems — a personal blog by Kiril (Vương Tuấn Anh).",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0d1117",
