@@ -1,5 +1,6 @@
 import { Client } from "@notionhq/client";
 import { ListBlockChildrenResponse } from '@notionhq/client/build/src/api-endpoints'
+import { NotionAPI } from "notion-client";
 import { PostMeta, toPostMeta } from './posts'
 
 const notion: any = new Client({ auth: process.env.NOTION_API_KEY });
@@ -78,4 +79,18 @@ export const getPostList = async (): Promise<PostMeta[]> => {
     // A post with no slug has no reachable URL, so drop it here rather than let
     // every list render a dead /blog/ link.
     return posts.filter((p) => p.slug);
+};
+
+// notion-client fetches page bodies through got, which sends its own default
+// User-Agent ("got (https://github.com/sindresorhus/got)"). Notion now rejects
+// that UA with 403 on /api/v3/loadPageChunk — the same request succeeds with a
+// browser or curl UA — so every post page failed to render. Override it here.
+const NOTION_USER_AGENT =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+export const getPageContent = async (pageId: string) => {
+    const recordMap = await new NotionAPI().getPage(pageId, {
+        gotOptions: { headers: { "user-agent": NOTION_USER_AGENT } },
+    });
+    return normalizeRecordMap(recordMap);
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import { NotionRenderer } from "react-notion-x";
 
-import { getPostList, normalizeRecordMap } from "../../lib/notion";
+import { getPostList, getPageContent } from "../../lib/notion";
 import {
     PostMeta,
     formatDate,
@@ -10,7 +10,6 @@ import {
     neighbors,
     tagSlug,
 } from "../../lib/posts";
-import { NotionAPI } from "notion-client";
 
 import { Collection } from "react-notion-x/build/third-party/collection";
 import { Equation } from "react-notion-x/build/third-party/equation";
@@ -271,8 +270,7 @@ export const getStaticProps = async ({ params }: { params: any }) => {
         return { notFound: true };
     }
 
-    const notion = new NotionAPI();
-    const blocks = normalizeRecordMap(await notion.getPage(meta.id));
+    const blocks = await getPageContent(meta.id);
     const readingTime = readingTimeMinutes(blocks);
     const { prev, next } = neighbors(posts, meta.slug);
 
