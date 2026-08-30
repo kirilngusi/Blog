@@ -12,6 +12,10 @@ const navigations = [
         link: "/blog",
     },
     {
+        name: "About",
+        link: "/about",
+    },
+    {
         name: "Projects & Socials",
         link: "/projectsnsocials",
     },

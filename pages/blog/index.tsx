@@ -1,66 +1,14 @@
 import React, { useMemo, useState } from "react";
 
-import { getAllPosts } from "../../lib/notion";
-import { PostMeta, toPostMeta, formatDate } from "../../lib/posts";
-
-import Highlighter from "react-highlight-words";
-import Link from "next/link";
-import ReactGA from "react-ga4";
+import { getPostList } from "../../lib/notion";
+import { PostMeta, allTags as collectTags } from "../../lib/posts";
 
 import Fuse from "fuse.js";
 import { motion } from "framer-motion";
 import { FiSearch, FiX } from "react-icons/fi";
 
 import SEO from "../../components/SEO";
-
-const handleClick = () => {
-    ReactGA.event({ action: "click to read", category: "read" });
-};
-
-const PostCard = ({ post, terms }: { post: PostMeta; terms: string[] }) => (
-    <Link href={`/blog/${post.slug}`}>
-        <a
-            onClick={handleClick}
-            className="group block rounded-xl border border-light-800 p-5 transition-all hover:-translate-y-0.5 hover:border-accent-500 hover:shadow-sm dark:border-dark-600 dark:hover:border-accent-400"
-        >
-            <div className="flex items-baseline justify-between gap-4">
-                <h3 className="font-bold text-black transition-colors group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
-                    <Highlighter
-                        highlightClassName="bg-accent-200 text-accent-900 rounded px-0.5"
-                        searchWords={terms}
-                        autoEscape
-                        textToHighlight={post.title}
-                    />
-                </h3>
-                <time className="shrink-0 font-mono text-xs text-gray-400 dark:text-dark-200">
-                    {formatDate(post.date)}
-                </time>
-            </div>
-            {post.description && (
-                <p className="mt-1.5 text-sm leading-6 text-gray-600 dark:text-dark-100">
-                    <Highlighter
-                        highlightClassName="bg-accent-200 text-accent-900 rounded px-0.5"
-                        searchWords={terms}
-                        autoEscape
-                        textToHighlight={post.description}
-                    />
-                </p>
-            )}
-            {post.tags.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                    {post.tags.map((t) => (
-                        <span
-                            key={t}
-                            className="rounded-full bg-light-700 px-2 py-0.5 text-xs text-gray-500 dark:bg-dark-600 dark:text-dark-100"
-                        >
-                            {t}
-                        </span>
-                    ))}
-                </div>
-            )}
-        </a>
-    </Link>
-);
+import PostCard from "../../components/PostCard";
 
 const AllPost = ({ posts }: { posts: PostMeta[] }) => {
     const [query, setQuery] = useState("");
@@ -79,11 +27,7 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
         [posts]
     );
 
-    const allTags = useMemo(() => {
-        const set = new Set<string>();
-        posts.forEach((p) => p.tags.forEach((t) => set.add(t)));
-        return Array.from(set).sort();
-    }, [posts]);
+    const allTags = useMemo(() => collectTags(posts), [posts]);
 
     const results = useMemo(() => {
         const base = query.trim()
@@ -216,8 +160,7 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
 export default AllPost;
 
 export const getStaticProps = async () => {
-    const response = await getAllPosts();
-    const posts = response.map(toPostMeta);
+    const posts = await getPostList();
 
     return {
         props: { posts },

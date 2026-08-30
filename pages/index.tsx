@@ -5,12 +5,13 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 
 import { SiGithub, SiLinkedin } from "react-icons/si";
-import { FiMail, FiArrowRight, FiFolder, FiBookOpen } from "react-icons/fi";
+import { FiMail, FiArrowRight, FiFolder, FiUser } from "react-icons/fi";
 
 import SEO from "../components/SEO";
-import Typewriter from "../components/Typewriter";
+import PostCard from "../components/PostCard";
 import { siteConfig } from "../lib/siteConfig";
-import { about, experiences, skills, education } from "../lib/data/resume";
+import { getPostList } from "../lib/notion";
+import { PostMeta, allTags } from "../lib/posts";
 
 const HeroScene3D = dynamic(() => import("../components/HeroScene"), {
     ssr: false,
@@ -25,14 +26,18 @@ const RoamingRobot3D = dynamic(() => import("../components/RoamingRobot"), {
     ssr: false,
 });
 
+const LATEST_COUNT = 5;
+
 const sectionTitle =
     "font-serif text-2xl font-bold text-black dark:text-white mb-6";
-const tag =
-    "rounded-full bg-accent-600/10 text-accent-700 dark:bg-accent-400/10 dark:text-accent-300 px-2.5 py-1 text-xs font-medium";
 const iconLink =
     "flex items-center gap-2 rounded-lg border border-light-800 px-3 py-2 text-sm text-gray-600 transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300";
 
-const Home: NextPage = () => {
+const Home: NextPage<{
+    posts: PostMeta[];
+    postCount: number;
+    tagCount: number;
+}> = ({ posts, postCount, tagCount }) => {
     const [roam, setRoam] = useState(false);
 
     return (
@@ -42,50 +47,38 @@ const Home: NextPage = () => {
             {roam && <RoamingRobot3D onExit={() => setRoam(false)} />}
 
             <div className="mx-auto max-w-5xl px-6 text-black dark:text-dark-50">
-                {/* Hero: 3D robot left, text right */}
-                <section className="grid animate-fade-up items-center gap-10 py-6 lg:grid-cols-2 lg:py-8">
-                    <div className="relative order-2 h-[320px] sm:h-[400px] lg:order-1">
-                        {/* Roam is a desktop-only feature (hidden on mobile). */}
-                        <button
-                            type="button"
-                            onClick={() => setRoam((v) => !v)}
-                            className="absolute left-3 top-3 z-10 hidden items-center gap-1.5 rounded-lg border border-light-800 bg-white/70 px-3 py-1.5 text-xs font-medium text-gray-600 backdrop-blur transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:bg-dark-700/70 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300 sm:flex"
-                        >
-                            {roam ? "✕ Exit roam" : "🚶 Roam the page"}
-                        </button>
-                        {roam ? (
-                            <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                                <span className="animate-float text-4xl">🚶</span>
-                                <p className="text-sm text-gray-500 dark:text-dark-200">
-                                    Roaming the page…
-                                </p>
-                            </div>
-                        ) : (
-                            <HeroScene3D />
-                        )}
-                    </div>
+                {/* Hero: blog intro left, 3D robot right */}
+                <section className="grid animate-fade-up items-center gap-10 py-6 lg:grid-cols-2 lg:py-10">
+                    <div>
+                        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent-600 dark:text-accent-400">
+                            {siteConfig.blog.eyebrow}
+                        </p>
 
-                    <div className="order-1 lg:order-2">
-                        <h1 className="text-4xl font-bold sm:text-5xl">
-                            Hi, I&apos;m{" "}
-                            <Typewriter
-                                text="Kiril"
-                                className="bg-gradient-to-r from-accent-500 to-cyan-400 bg-clip-text text-transparent"
-                            />{" "}
-                            <span className="inline-block origin-[70%_70%] animate-wave">
-                                👋
-                            </span>
+                        <h1 className="font-serif text-5xl font-bold leading-[1.05] sm:text-6xl">
+                            {siteConfig.blog.heading}
                         </h1>
 
-                        <p className="mb-4 mt-3 text-lg font-semibold text-accent-600 dark:text-accent-400">
-                            {about.headline}
+                        <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-dark-100">
+                            {siteConfig.blog.intro}
                         </p>
 
-                        <p className="mb-6 leading-7 text-gray-600 dark:text-dark-100">
-                            {about.summary}
-                        </p>
+                        <div className="mt-7 flex items-center gap-3 text-sm text-gray-500 dark:text-dark-200">
+                            <span>
+                                <strong className="font-bold text-black dark:text-white">
+                                    {postCount}
+                                </strong>{" "}
+                                article{postCount === 1 ? "" : "s"}
+                            </span>
+                            <span aria-hidden>·</span>
+                            <span>
+                                <strong className="font-bold text-black dark:text-white">
+                                    {tagCount}
+                                </strong>{" "}
+                                tag{tagCount === 1 ? "" : "s"}
+                            </span>
+                        </div>
 
-                        <div className="flex flex-wrap gap-3">
+                        <div className="mt-6 flex flex-wrap gap-3">
                             <a
                                 href={siteConfig.socials.github}
                                 target="_blank"
@@ -110,101 +103,79 @@ const Home: NextPage = () => {
                             </a>
                         </div>
                     </div>
+
+                    <div className="relative h-[320px] sm:h-[400px]">
+                        {/* Roam is a desktop-only feature (hidden on mobile). */}
+                        <button
+                            type="button"
+                            onClick={() => setRoam((v) => !v)}
+                            className="absolute left-3 top-3 z-10 hidden items-center gap-1.5 rounded-lg border border-light-800 bg-white/70 px-3 py-1.5 text-xs font-medium text-gray-600 backdrop-blur transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:bg-dark-700/70 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300 sm:flex"
+                        >
+                            {roam ? "✕ Exit roam" : "🚶 Roam the page"}
+                        </button>
+                        {roam ? (
+                            <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+                                <span className="animate-float text-4xl">🚶</span>
+                                <p className="text-sm text-gray-500 dark:text-dark-200">
+                                    Roaming the page…
+                                </p>
+                            </div>
+                        ) : (
+                            <HeroScene3D />
+                        )}
+                    </div>
                 </section>
 
                 {/* Content (kept narrow for readability) */}
                 <div className="mx-auto max-w-3xl">
-                    {/* Experience */}
-                    <section className="mt-12">
-                        <h2 className={sectionTitle}>Experience</h2>
-                        <div className="flex flex-col gap-8 border-l border-light-800 pl-6 dark:border-dark-600">
-                            {experiences.map((exp) => (
-                                <div key={exp.company} className="relative">
-                                    <span className="absolute -left-[29px] top-1.5 h-2.5 w-2.5 rounded-full bg-accent-500 ring-4 ring-white dark:ring-dark-800" />
-                                    <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                                        <h3 className="font-bold text-black dark:text-white">
-                                            {exp.company}
-                                        </h3>
-                                        <span className="font-mono text-xs text-gray-500 dark:text-dark-200">
-                                            {exp.period}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm font-medium text-accent-600 dark:text-accent-400">
-                                        {exp.role} · {exp.location}
-                                    </p>
-                                    {exp.stack && (
-                                        <div className="mt-3 flex flex-wrap gap-2">
-                                            {exp.stack.map((s) => (
-                                                <span key={s} className={tag}>
-                                                    {s}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </section>
+                    {/* Latest posts */}
+                    <section className="mt-10 border-t border-light-800 pt-12 dark:border-dark-600">
+                        <h2 className={sectionTitle}>Latest posts</h2>
 
-                    {/* Skills */}
-                    <section className="mt-14">
-                        <h2 className={sectionTitle}>Skills</h2>
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            {skills.map((group) => (
-                                <div
-                                    key={group.group}
-                                    className="rounded-xl border border-light-800 p-4 dark:border-dark-600"
-                                >
-                                    <div className="mb-2 text-sm font-semibold text-gray-500 dark:text-dark-200">
-                                        {group.group}
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {group.items.map((s) => (
-                                            <span key={s} className={tag}>
-                                                {s}
-                                            </span>
-                                        ))}
-                                    </div>
+                        {posts.length > 0 ? (
+                            <>
+                                <div className="flex flex-col gap-3">
+                                    {posts.map((post) => (
+                                        <PostCard key={post.slug} post={post} />
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </section>
 
-                    {/* Education */}
-                    <section className="mt-14">
-                        <h2 className={sectionTitle}>Education</h2>
-                        <div className="rounded-xl border border-light-800 p-5 dark:border-dark-600">
-                            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                                <h3 className="font-bold text-black dark:text-white">
-                                    {education.school}
-                                </h3>
-                                <span className="font-mono text-xs text-gray-500 dark:text-dark-200">
-                                    {education.period}
-                                </span>
-                            </div>
-                            <p className="mt-1 text-sm text-gray-600 dark:text-dark-100">
-                                {education.degree} · Classification:{" "}
-                                {education.classification}
+                                <Link href="/blog">
+                                    <a className="group mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-600 transition-colors hover:text-accent-700 dark:text-accent-400 dark:hover:text-accent-300">
+                                        View all posts
+                                        <FiArrowRight className="transition-transform group-hover:translate-x-1" />
+                                    </a>
+                                </Link>
+                            </>
+                        ) : (
+                            <p className="text-gray-500 dark:text-dark-200">
+                                No posts published yet — check back soon.
                             </p>
-                        </div>
+                        )}
                     </section>
 
-                    {/* Explore */}
+                    {/* Elsewhere */}
                     <section className="mb-16 mt-14">
-                        <h2 className={sectionTitle}>Explore</h2>
+                        <h2 className={sectionTitle}>Elsewhere</h2>
                         <div className="grid gap-3 sm:grid-cols-2">
-                            <Link href="/blog">
+                            <Link href="/about">
                                 <a className="group flex items-center gap-3 rounded-xl border border-light-800 p-4 transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
-                                    <FiBookOpen className="flex-shrink-0 text-accent-600 dark:text-accent-400" size={20} />
+                                    <FiUser
+                                        className="flex-shrink-0 text-accent-600 dark:text-accent-400"
+                                        size={20}
+                                    />
                                     <span className="flex-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
-                                        Read the Blog
+                                        About me
                                     </span>
                                     <FiArrowRight className="flex-shrink-0 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-accent-600 dark:group-hover:text-accent-400" />
                                 </a>
                             </Link>
                             <Link href="/projectsnsocials">
                                 <a className="group flex items-center gap-3 rounded-xl border border-light-800 p-4 transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
-                                    <FiFolder className="flex-shrink-0 text-accent-600 dark:text-accent-400" size={20} />
+                                    <FiFolder
+                                        className="flex-shrink-0 text-accent-600 dark:text-accent-400"
+                                        size={20}
+                                    />
                                     <span className="flex-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
                                         Projects &amp; Socials
                                     </span>
@@ -220,3 +191,16 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getStaticProps = async () => {
+    const all = await getPostList();
+
+    return {
+        props: {
+            posts: all.slice(0, LATEST_COUNT),
+            postCount: all.length,
+            tagCount: allTags(all).length,
+        },
+        revalidate: 60,
+    };
+};

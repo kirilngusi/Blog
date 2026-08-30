@@ -1,12 +1,14 @@
 import React from "react";
 import { NotionRenderer } from "react-notion-x";
 
-import { getAllPosts, normalizeRecordMap } from "../../lib/notion";
+import { getPostList, normalizeRecordMap } from "../../lib/notion";
 import {
-    toPostMeta,
     PostMeta,
     formatDate,
     readingTimeMinutes,
+    relatedPosts,
+    neighbors,
+    tagSlug,
 } from "../../lib/posts";
 import { NotionAPI } from "notion-client";
 
@@ -20,6 +22,7 @@ import { FiArrowLeft, FiClock } from "react-icons/fi";
 
 import SEO from "../../components/SEO";
 import Comments from "../../components/Comments";
+import PostCard from "../../components/PostCard";
 import { useTheme } from "../../lib/useTheme";
 
 const Code = dynamic(async () => {
@@ -39,10 +42,16 @@ const SinglePost = ({
     blocks,
     meta,
     readingTime,
+    related,
+    prev,
+    next,
 }: {
     blocks: any;
     meta: PostMeta;
     readingTime: number;
+    related: PostMeta[];
+    prev: PostMeta | null;
+    next: PostMeta | null;
 }) => {
     const { theme } = useTheme();
     const isDark = theme === "dark";
@@ -78,12 +87,11 @@ const SinglePost = ({
                     {meta.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
                             {meta.tags.map((t) => (
-                                <span
-                                    key={t}
-                                    className="rounded-full bg-accent-600/10 px-2.5 py-0.5 text-xs font-medium text-accent-700 dark:bg-accent-400/10 dark:text-accent-300"
-                                >
-                                    {t}
-                                </span>
+                                <Link key={t} href={`/tags/${tagSlug(t)}`}>
+                                    <a className="rounded-full bg-accent-600/10 px-2.5 py-0.5 text-xs font-medium text-accent-700 transition-colors hover:bg-accent-600/20 dark:bg-accent-400/10 dark:text-accent-300 dark:hover:bg-accent-400/20">
+                                        {t}
+                                    </a>
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -98,6 +106,50 @@ const SinglePost = ({
                 showTableOfContents={true}
                 minTableOfContentsItems={3}
             />
+
+            {(prev || next) && (
+                <nav className="mt-12 grid gap-3 border-t border-light-800 pt-6 sm:grid-cols-2 dark:border-dark-600">
+                    {prev ? (
+                        <Link href={`/blog/${prev.slug}`}>
+                            <a className="group rounded-xl border border-light-800 p-4 transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
+                                <div className="text-xs font-medium text-gray-400 dark:text-dark-200">
+                                    &larr; Older
+                                </div>
+                                <div className="mt-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
+                                    {prev.title}
+                                </div>
+                            </a>
+                        </Link>
+                    ) : (
+                        <span />
+                    )}
+                    {next && (
+                        <Link href={`/blog/${next.slug}`}>
+                            <a className="group rounded-xl border border-light-800 p-4 text-right transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
+                                <div className="text-xs font-medium text-gray-400 dark:text-dark-200">
+                                    Newer &rarr;
+                                </div>
+                                <div className="mt-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
+                                    {next.title}
+                                </div>
+                            </a>
+                        </Link>
+                    )}
+                </nav>
+            )}
+
+            {related.length > 0 && (
+                <section className="mt-12">
+                    <h2 className="mb-4 font-serif text-2xl font-bold text-black dark:text-white">
+                        Related posts
+                    </h2>
+                    <div className="flex flex-col gap-3">
+                        {related.map((p) => (
+                            <PostCard key={p.slug} post={p} />
+                        ))}
+                    </div>
+                </section>
+            )}
 
             <Comments />
 
@@ -201,39 +253,38 @@ const SinglePost = ({
 export default SinglePost;
 
 export const getStaticPaths = async () => {
-    const allPosts = await getAllPosts();
-    const slugMapping = allPosts.map((p: any) => {
-        const slug = p.properties.slug.rich_text[0]?.plain_text?.toString();
-        if (!slug) {
-            // fallback to a 404-style path
-            return { params: { slug: "404-not-found" } };
-        }
-        return { params: { slug: slug.trim() } };
-    });
+    const posts = await getPostList();
+
     return {
-        paths: slugMapping,
+        // getPostList already drops slug-less rows, so every path here resolves.
+        paths: posts.map((p) => ({ params: { slug: p.slug } })),
         fallback: false,
     };
 };
 
 export const getStaticProps = async ({ params }: { params: any }) => {
-    const db = await getAllPosts(params.slug);
-    const post = db.find(
-        (t: any) =>
-            t.properties.slug.rich_text[0].text.content === params?.slug
-    );
+    // One fetch covers the post itself plus its related/adjacent posts.
+    const posts = await getPostList();
+    const meta = posts.find((p) => p.slug === params?.slug);
 
-    if (!post) {
+    if (!meta) {
         return { notFound: true };
     }
 
-    const meta = toPostMeta(post);
     const notion = new NotionAPI();
-    const blocks = normalizeRecordMap(await notion.getPage(post.id));
+    const blocks = normalizeRecordMap(await notion.getPage(meta.id));
     const readingTime = readingTimeMinutes(blocks);
+    const { prev, next } = neighbors(posts, meta.slug);
 
     return {
-        props: { blocks, meta, readingTime },
+        props: {
+            blocks,
+            meta,
+            readingTime,
+            related: relatedPosts(posts, meta),
+            prev,
+            next,
+        },
         revalidate: 60,
     };
 };
