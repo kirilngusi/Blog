@@ -257,7 +257,9 @@ export const getStaticPaths = async () => {
     return {
         // getPostList already drops slug-less rows, so every path here resolves.
         paths: posts.map((p) => ({ params: { slug: p.slug } })),
-        fallback: false,
+        // 'blocking' so a post published after the last deploy gets SSR'd and
+        // cached on first request instead of 404ing until the next redeploy.
+        fallback: "blocking",
     };
 };
 
