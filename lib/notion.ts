@@ -1,6 +1,7 @@
 import { Client } from "@notionhq/client";
 import { ListBlockChildrenResponse } from '@notionhq/client/build/src/api-endpoints'
 import { NotionAPI } from "notion-client";
+import { getPageContentBlockIds } from "notion-utils";
 import { siteConfig } from './siteConfig'
 import { PostMeta, toPostMeta } from './posts'
 
@@ -91,9 +92,26 @@ export const getPostList = async (): Promise<PostMeta[]> => {
 // 8.x jump that react-notion-x has to make in step, so declare ourselves here.
 const NOTION_USER_AGENT = `kirilngusi-blog (+${siteConfig.url})`;
 
+// getPage only loads the first 100-block chunk in one go and fetches the rest
+// afterwards — but those late blocks come back double-wrapped (see flattenMap),
+// so notion-client can't see their children and stops there. A table, toggle or
+// nested list past block ~100 then renders empty. Finish the job after
+// normalizing, when every block's content ids are readable.
+const MAX_FETCH_ROUNDS = 10;
+
 export const getPageContent = async (pageId: string) => {
-    const recordMap = await new NotionAPI().getPage(pageId, {
-        gotOptions: { headers: { "user-agent": NOTION_USER_AGENT } },
-    });
-    return normalizeRecordMap(recordMap);
+    const api = new NotionAPI();
+    const gotOptions = { headers: { "user-agent": NOTION_USER_AGENT } };
+    const recordMap = normalizeRecordMap(await api.getPage(pageId, { gotOptions }));
+
+    for (let round = 0; round < MAX_FETCH_ROUNDS; round++) {
+        const missing = getPageContentBlockIds(recordMap).filter(
+            (id) => !recordMap.block[id]
+        );
+        if (!missing.length) break;
+        const res = await api.getBlocks(missing, gotOptions);
+        Object.assign(recordMap.block, res.recordMap.block);
+        normalizeRecordMap(recordMap);
+    }
+    return recordMap;
 };
