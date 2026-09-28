@@ -7,9 +7,23 @@ import { PostMeta, toPostMeta } from './posts'
 
 const notion: any = new Client({ auth: process.env.NOTION_API_KEY });
 
+// @notionhq/client 5.x (Notion API 2025-09-03) split the old single-source
+// database model: `databases.query` is gone, and rows now live behind a data
+// source. A database's data_source_id is stable, so fetch it once per
+// process instead of on every getAllPosts call.
+let dataSourceIdPromise: Promise<string> | null = null;
+const getDataSourceId = async (): Promise<string> => {
+    if (!dataSourceIdPromise) {
+        dataSourceIdPromise = notion.databases
+            .retrieve({ database_id: process.env.NOTION_DATABASE_ID })
+            .then((db: any) => db.data_sources[0].id);
+    }
+    return dataSourceIdPromise as Promise<string>;
+};
+
 export const getAllPosts = async (slug?: string) => {
     let dbQuery: any = {
-      database_id:  process.env.NOTION_DATABASE_ID,
+      data_source_id: await getDataSourceId(),
       filter: { and: [{ property: 'status', select: { equals: 'published' } }] },
       sorts: [{ property: 'Date', direction: 'descending' }],
     }
@@ -18,7 +32,7 @@ export const getAllPosts = async (slug?: string) => {
       dbQuery.filter.and.push({ property: 'slug', rich_text: { equals: slug } })
     }
 
-    const response = await notion.databases.query(dbQuery)
+    const response = await notion.dataSources.query(dbQuery)
     return response.results
 };
 
@@ -101,15 +115,15 @@ const MAX_FETCH_ROUNDS = 10;
 
 export const getPageContent = async (pageId: string) => {
     const api = new NotionAPI();
-    const gotOptions = { headers: { "user-agent": NOTION_USER_AGENT } };
-    const recordMap = normalizeRecordMap(await api.getPage(pageId, { gotOptions }));
+    const ofetchOptions = { headers: { "user-agent": NOTION_USER_AGENT } };
+    const recordMap = normalizeRecordMap(await api.getPage(pageId, { ofetchOptions }));
 
     for (let round = 0; round < MAX_FETCH_ROUNDS; round++) {
         const missing = getPageContentBlockIds(recordMap).filter(
             (id) => !recordMap.block[id]
         );
         if (!missing.length) break;
-        const res = await api.getBlocks(missing, gotOptions);
+        const res = await api.getBlocks(missing, ofetchOptions);
         Object.assign(recordMap.block, res.recordMap.block);
         normalizeRecordMap(recordMap);
     }

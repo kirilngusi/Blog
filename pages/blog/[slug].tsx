@@ -13,7 +13,6 @@ import {
 
 import { Collection } from "react-notion-x/build/third-party/collection";
 import { Equation } from "react-notion-x/build/third-party/equation";
-import { Pdf } from "react-notion-x/build/third-party/pdf";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -33,6 +32,17 @@ const Modal = dynamic(
     async () => {
         const m = await import("react-notion-x/build/third-party/modal");
         return m.Modal;
+    },
+    { ssr: false }
+);
+
+// pdfjs-dist (a transitive dep) reaches for browser-only APIs (DOMMatrix) at
+// module-eval time, which crashes Next's server-side "Collecting page data"
+// step if this is imported eagerly. Defer it to the client like Modal above.
+const Pdf = dynamic(
+    async () => {
+        const m = await import("react-notion-x/build/third-party/pdf");
+        return m.Pdf;
     },
     { ssr: false }
 );
