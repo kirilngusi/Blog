@@ -1,6 +1,8 @@
 import { Client } from "@notionhq/client";
 import { ListBlockChildrenResponse } from '@notionhq/client/build/src/api-endpoints'
 import { NotionAPI } from "notion-client";
+import { getPageContentBlockIds } from "notion-utils";
+import { siteConfig } from './siteConfig'
 import { PostMeta, toPostMeta } from './posts'
 
 const notion: any = new Client({ auth: process.env.NOTION_API_KEY });
@@ -81,16 +83,35 @@ export const getPostList = async (): Promise<PostMeta[]> => {
     return posts.filter((p) => p.slug);
 };
 
-// notion-client fetches page bodies through got, which sends its own default
-// User-Agent ("got (https://github.com/sindresorhus/got)"). Notion now rejects
-// that UA with 403 on /api/v3/loadPageChunk — the same request succeeds with a
-// browser or curl UA — so every post page failed to render. Override it here.
-const NOTION_USER_AGENT =
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+// notion-client 6.x fetches page bodies through got and never sets a
+// User-Agent, so requests go out as "got (https://github.com/sindresorhus/got)"
+// — a UA Notion now rejects with 403 on /api/v3/loadPageChunk, which broke
+// every post page at build time. Notion is not blocking automation as such: a
+// UA that identifies the caller passes fine. notion-client 8.x fixed this the
+// same way, by declaring itself. Upgrading is the real fix, but it is a 6.x to
+// 8.x jump that react-notion-x has to make in step, so declare ourselves here.
+const NOTION_USER_AGENT = `kirilngusi-blog (+${siteConfig.url})`;
+
+// getPage only loads the first 100-block chunk in one go and fetches the rest
+// afterwards — but those late blocks come back double-wrapped (see flattenMap),
+// so notion-client can't see their children and stops there. A table, toggle or
+// nested list past block ~100 then renders empty. Finish the job after
+// normalizing, when every block's content ids are readable.
+const MAX_FETCH_ROUNDS = 10;
 
 export const getPageContent = async (pageId: string) => {
-    const recordMap = await new NotionAPI().getPage(pageId, {
-        gotOptions: { headers: { "user-agent": NOTION_USER_AGENT } },
-    });
-    return normalizeRecordMap(recordMap);
+    const api = new NotionAPI();
+    const gotOptions = { headers: { "user-agent": NOTION_USER_AGENT } };
+    const recordMap = normalizeRecordMap(await api.getPage(pageId, { gotOptions }));
+
+    for (let round = 0; round < MAX_FETCH_ROUNDS; round++) {
+        const missing = getPageContentBlockIds(recordMap).filter(
+            (id) => !recordMap.block[id]
+        );
+        if (!missing.length) break;
+        const res = await api.getBlocks(missing, gotOptions);
+        Object.assign(recordMap.block, res.recordMap.block);
+        normalizeRecordMap(recordMap);
+    }
+    return recordMap;
 };
