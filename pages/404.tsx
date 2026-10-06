@@ -3,9 +3,11 @@ import Link from "next/link";
 import { FiHome, FiArrowRight } from "react-icons/fi";
 
 import SEO from "../components/SEO";
+import { useT } from "../lib/i18n";
 
 const NotFound = () => {
     const [pathname, setPathname] = useState("");
+    const t = useT();
 
     useEffect(() => {
         setPathname(window.location.pathname);
@@ -14,8 +16,8 @@ const NotFound = () => {
     return (
         <>
             <SEO
-                title="404 — Not Found"
-                description="This page wandered off. Let's get you back."
+                title={t.notFound.title}
+                description={t.notFound.description}
                 noindex
             />
 
@@ -26,10 +28,10 @@ const NotFound = () => {
                     </span>
                 </h1>
                 <p className="mt-3 text-lg font-semibold text-gray-700 dark:text-dark-50">
-                    This page got lost in space
+                    {t.notFound.heading}
                 </p>
                 <p className="mt-1 text-sm text-gray-500 dark:text-dark-200">
-                    The robot couldn&apos;t find what you were looking for.
+                    {t.notFound.sub}
                 </p>
 
                 {/* Terminal-style error */}
@@ -60,12 +62,12 @@ const NotFound = () => {
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                     <Link href="/">
                         <a className="inline-flex items-center gap-2 rounded-lg bg-accent-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-700">
-                            <FiHome size={16} /> Go home
+                            <FiHome size={16} /> {t.notFound.home}
                         </a>
                     </Link>
                     <Link href="/blog">
                         <a className="group inline-flex items-center gap-1.5 rounded-lg border border-light-800 px-5 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-dark-600 dark:text-dark-100 dark:hover:border-accent-400 dark:hover:text-accent-300">
-                            Read the blog
+                            {t.notFound.readBlog}
                             <FiArrowRight className="transition-transform group-hover:translate-x-1" />
                         </a>
                     </Link>

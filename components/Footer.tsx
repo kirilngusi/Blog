@@ -3,13 +3,17 @@ import React from "react";
 import Link from "next/link";
 import { SiNextdotjs, SiNotion, SiVercel } from "react-icons/si";
 
-const links = [
-    { name: "Blog", href: "/blog" },
-    { name: "About", href: "/about" },
-    { name: "Projects", href: "/projectsnsocials" },
-];
+import { localePath, useLocale, useT } from "../lib/i18n";
 
 const Footer = () => {
+    const t = useT();
+    const locale = useLocale();
+    const links = [
+        { name: t.nav.blog, href: "/blog" },
+        { name: t.nav.about, href: "/about" },
+        { name: t.nav.projectsShort, href: "/projectsnsocials" },
+    ];
+
     return (
         <footer className="primary-text p-6 text-center text-xs">
             <nav className="mb-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
@@ -25,7 +29,7 @@ const Footer = () => {
                     deliver the XML. */}
                 {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                 <a
-                    href="/rss.xml"
+                    href={localePath(locale, "/rss.xml")}
                     className="transition-colors hover:text-accent-600 dark:hover:text-accent-400"
                 >
                     RSS

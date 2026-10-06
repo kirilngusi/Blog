@@ -4,6 +4,7 @@ import { NotionAPI } from "notion-client";
 import { getPageContentBlockIds } from "notion-utils";
 import { siteConfig } from './siteConfig'
 import { PostMeta, toPostMeta } from './posts'
+import { DEFAULT_LOCALE, Locale } from './i18n'
 
 const notion: any = new Client({ auth: process.env.NOTION_API_KEY });
 
@@ -89,12 +90,31 @@ export const getBlocks = async (blockId: string) => {
 // Single entry point for "all published posts, normalized". Server-only: it
 // lives here rather than in lib/posts.ts so that client components importing
 // posts.ts (PostCard) never pull @notionhq/client into the browser bundle.
-export const getPostList = async (): Promise<PostMeta[]> => {
+//
+// Translations are separate rows sharing a slug. Each slug appears once: the
+// row in `locale` if one exists, otherwise another language's row, so an
+// untranslated post still shows up (the UI labels it with its language).
+export const getPostList = async (locale: Locale = DEFAULT_LOCALE): Promise<PostMeta[]> => {
     const rows = await getAllPosts();
-    const posts: PostMeta[] = rows.map(toPostMeta);
-    // A post with no slug has no reachable URL, so drop it here rather than let
-    // every list render a dead /blog/ link.
-    return posts.filter((p) => p.slug);
+    const bySlug = new Map<string, PostMeta[]>();
+    for (const post of rows.map(toPostMeta)) {
+        // A post with no slug has no reachable URL, so drop it here rather
+        // than let every list render a dead /blog/ link.
+        if (!post.slug) continue;
+        bySlug.set(post.slug, [...(bySlug.get(post.slug) ?? []), post]);
+    }
+
+    // Re-sort: the chosen translation's Date can differ from the row that
+    // put the slug first, and neighbors() relies on Date-desc order.
+    return Array.from(bySlug.values())
+        .map((variants) => {
+            const chosen = variants.find((v) => v.lang === locale) ?? variants[0];
+            const availableLangs = Array.from(
+                new Set(variants.map((v) => v.lang).filter(Boolean))
+            );
+            return { ...chosen, availableLangs };
+        })
+        .sort((a, b) => b.date.localeCompare(a.date));
 };
 
 // notion-client 6.x fetches page bodies through got and never sets a

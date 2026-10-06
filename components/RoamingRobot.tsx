@@ -3,6 +3,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
+import { useT } from "../lib/i18n";
+
 const MODEL = "/models/RobotExpressive.glb";
 
 type Dir = { f: boolean; b: boolean; l: boolean; r: boolean };
@@ -75,6 +77,7 @@ const kbd =
     "rounded border border-light-800 px-1.5 py-0.5 font-mono dark:border-dark-500";
 
 const RoamingRobot = ({ onExit }: { onExit: () => void }) => {
+    const t = useT();
     const [isTouch, setIsTouch] = useState(false);
     const dir = useRef<Dir>({ f: false, b: false, l: false, r: false });
 
@@ -192,19 +195,19 @@ const RoamingRobot = ({ onExit }: { onExit: () => void }) => {
                 {isTouch ? (
                     <div className="grid grid-cols-3 gap-1">
                         <span />
-                        <button type="button" className={pad} aria-label="Up" {...hold("f")}>
+                        <button type="button" className={pad} aria-label={t.scene.up} {...hold("f")}>
                             ▲
                         </button>
                         <span />
-                        <button type="button" className={pad} aria-label="Left" {...hold("l")}>
+                        <button type="button" className={pad} aria-label={t.scene.left} {...hold("l")}>
                             ◀
                         </button>
                         <span />
-                        <button type="button" className={pad} aria-label="Right" {...hold("r")}>
+                        <button type="button" className={pad} aria-label={t.scene.right} {...hold("r")}>
                             ▶
                         </button>
                         <span />
-                        <button type="button" className={pad} aria-label="Down" {...hold("b")}>
+                        <button type="button" className={pad} aria-label={t.scene.down} {...hold("b")}>
                             ▼
                         </button>
                         <span />
@@ -214,7 +217,7 @@ const RoamingRobot = ({ onExit }: { onExit: () => void }) => {
                         <kbd className={kbd}>WASD</kbd>
                         <span>/</span>
                         <kbd className={kbd}>↑↓←→</kbd>
-                        <span>roam</span>
+                        <span>{t.scene.roamHint}</span>
                     </div>
                 )}
 
@@ -223,7 +226,7 @@ const RoamingRobot = ({ onExit }: { onExit: () => void }) => {
                     onClick={onExit}
                     className="pointer-events-auto rounded-lg border border-accent-500 bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-700"
                 >
-                    Return
+                    {t.scene.exitRoam}
                 </button>
             </div>
         </div>

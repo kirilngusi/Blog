@@ -3,23 +3,30 @@ import { Fragment } from "react";
 import { FiMenu } from "react-icons/fi";
 
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import ThemeToggle from "./ThemeToggle";
+import { LOCALES, NATIVE_NAMES, useLocale, useT } from "../lib/i18n";
 
-const navigations = [
-    {
-        name: "Blog",
-        link: "/blog",
-    },
-    {
-        name: "About",
-        link: "/about",
-    },
-    {
-        name: "Projects & Socials",
-        link: "/projectsnsocials",
-    },
-];
+const LanguageSwitch = () => {
+    const router = useRouter();
+    const locale = useLocale();
+    const t = useT();
+    const other = LOCALES.find((l) => l !== locale)!;
+
+    return (
+        <Link href={router.asPath} locale={other} passHref>
+            <a
+                aria-label={t.switchLanguage}
+                title={NATIVE_NAMES[other]}
+                hrefLang={other}
+                className="rounded-lg px-2 py-1.5 font-mono text-xs font-bold uppercase transition-colors hover:text-accent-600 dark:hover:text-accent-400"
+            >
+                {other}
+            </a>
+        </Link>
+    );
+};
 
 const MenuItemLink = (props: { href: string; children: React.ReactNode }) => {
     const { href, children, ...rest } = props;
@@ -31,6 +38,13 @@ const MenuItemLink = (props: { href: string; children: React.ReactNode }) => {
 };
 
 const Navbar = () => {
+    const t = useT();
+    const navigations = [
+        { name: t.nav.blog, link: "/blog" },
+        { name: t.nav.about, link: "/about" },
+        { name: t.nav.projects, link: "/projectsnsocials" },
+    ];
+
     return (
         <header className="z-20 flex items-center px-4 py-3 justify-between sticky top-0 backdrop-blur-lg text-gray-500 border-b border-transparent dark:text-dark-100">
             <Link href="/">
@@ -50,6 +64,7 @@ const Navbar = () => {
                     ))}
                 </nav>
 
+                <LanguageSwitch />
                 <ThemeToggle />
 
                 <div className="block sm:hidden">

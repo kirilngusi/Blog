@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 
 import SEO from "../../components/SEO";
 import { about, experiences, skills, education } from "../../lib/data/resume";
+import { useLocale, useT } from "../../lib/i18n";
 
 const sectionTitle =
     "font-serif text-2xl font-bold text-black dark:text-white mb-6";
@@ -9,27 +10,34 @@ const tag =
     "rounded-full bg-accent-600/10 text-accent-700 dark:bg-accent-400/10 dark:text-accent-300 px-2.5 py-1 text-xs font-medium";
 
 const About: NextPage = () => {
+    const t = useT();
+    const locale = useLocale();
+
     return (
         <>
-            <SEO title="About" description={about.summary} path="/about" />
+            <SEO
+                title={t.about.title}
+                description={about.summary[locale]}
+                path="/about"
+            />
 
             <div className="mx-auto max-w-3xl px-6 text-black dark:text-dark-50">
                 <section className="animate-fade-up py-8">
-                    <h1 className="font-serif text-4xl font-bold">About</h1>
+                    <h1 className="font-serif text-4xl font-bold">{t.about.title}</h1>
                     <p className="mb-2 mt-3 text-lg font-semibold text-accent-600 dark:text-accent-400">
                         {about.headline}
                     </p>
                     <p className="leading-7 text-gray-600 dark:text-dark-100">
-                        {about.summary}
+                        {about.summary[locale]}
                     </p>
                     <p className="mt-2 text-sm text-gray-500 dark:text-dark-200">
-                        {about.location}
+                        {about.location[locale]}
                     </p>
                 </section>
 
                 {/* Experience */}
                 <section className="mt-10">
-                    <h2 className={sectionTitle}>Experience</h2>
+                    <h2 className={sectionTitle}>{t.about.experience}</h2>
                     <div className="flex flex-col gap-8 border-l border-light-800 pl-6 dark:border-dark-600">
                         {experiences.map((exp) => (
                             <div key={exp.company} className="relative">
@@ -61,7 +69,7 @@ const About: NextPage = () => {
 
                 {/* Skills */}
                 <section className="mt-14">
-                    <h2 className={sectionTitle}>Skills</h2>
+                    <h2 className={sectionTitle}>{t.about.skills}</h2>
                     <div className="grid gap-4 sm:grid-cols-2">
                         {skills.map((group) => (
                             <div
@@ -85,7 +93,7 @@ const About: NextPage = () => {
 
                 {/* Education */}
                 <section className="mb-16 mt-14">
-                    <h2 className={sectionTitle}>Education</h2>
+                    <h2 className={sectionTitle}>{t.about.education}</h2>
                     <div className="rounded-xl border border-light-800 p-5 dark:border-dark-600">
                         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                             <h3 className="font-bold text-black dark:text-white">
@@ -96,8 +104,8 @@ const About: NextPage = () => {
                             </span>
                         </div>
                         <p className="mt-1 text-sm text-gray-600 dark:text-dark-100">
-                            {education.degree} · Classification:{" "}
-                            {education.classification}
+                            {education.degree[locale]} · {t.about.classification}:{" "}
+                            {education.classification[locale]}
                         </p>
                     </div>
                 </section>

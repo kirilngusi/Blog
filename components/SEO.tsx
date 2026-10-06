@@ -1,29 +1,52 @@
 import Head from "next/head";
 import { siteConfig } from "../lib/siteConfig";
+import {
+    DEFAULT_LOCALE,
+    LOCALES,
+    Locale,
+    OG_LOCALES,
+    localePath,
+    toLocale,
+    useLocale,
+    useT,
+} from "../lib/i18n";
 
 interface SEOProps {
     title?: string;
     description?: string;
+    // Locale-less path ("/blog/foo"); the locale prefix is added here.
     path?: string;
     image?: string;
     type?: "website" | "article";
     publishedTime?: string;
     tags?: string[];
     noindex?: boolean;
+    // Locales this page really exists in, for hreflang. Defaults to all.
+    alternateLocales?: string[];
+    // Locale whose URL is canonical. Defaults to the current one; a post
+    // shown as an untranslated fallback points at its original language.
+    canonicalLocale?: Locale;
 }
 
 const SEO = ({
     title,
-    description = siteConfig.description,
+    description,
     path = "/",
     image = siteConfig.ogImage,
     type = "website",
     publishedTime,
     tags,
     noindex = false,
+    alternateLocales = [...LOCALES],
+    canonicalLocale,
 }: SEOProps) => {
+    const t = useT();
+    const locale = useLocale();
+    description = description ?? t.siteDescription;
     const pageTitle = title ? `${title} — ${siteConfig.name}` : siteConfig.title;
-    const url = `${siteConfig.url}${path}`;
+    const absolute = (l: Locale) => `${siteConfig.url}${localePath(l, path)}`;
+    const url = absolute(canonicalLocale ?? locale);
+    const alternates = alternateLocales.map(toLocale);
     const absoluteImage = image.startsWith("http")
         ? image
         : `${siteConfig.url}${image}`;
@@ -38,7 +61,7 @@ const SEO = ({
               "@type": "Person",
               name: siteConfig.fullName,
               alternateName: [siteConfig.name, ...siteConfig.alternateNames],
-              description: siteConfig.description,
+              description,
               url: siteConfig.url,
               image: `${siteConfig.url}${siteConfig.ogImage}`,
               jobTitle: siteConfig.role,
@@ -82,7 +105,10 @@ const SEO = ({
                       "@type": "ListItem",
                       position: 2,
                       name: "Blog",
-                      item: `${siteConfig.url}/blog`,
+                      item: `${siteConfig.url}${localePath(
+                          canonicalLocale ?? locale,
+                          "/blog"
+                      )}`,
                   },
                   {
                       "@type": "ListItem",
@@ -105,8 +131,36 @@ const SEO = ({
             <link rel="canonical" href={url} />
             {noindex && <meta name="robots" content="noindex, nofollow" />}
 
+            {alternates.map((l) => (
+                // next/head dedupes by key across all head tags: keep these
+                // distinct from the og:locale ones below.
+                <link
+                    key={`hreflang-${l}`}
+                    rel="alternate"
+                    hrefLang={l}
+                    href={absolute(l)}
+                />
+            ))}
+            {alternates.includes(DEFAULT_LOCALE) && (
+                <link
+                    rel="alternate"
+                    hrefLang="x-default"
+                    href={absolute(DEFAULT_LOCALE)}
+                />
+            )}
+
             {/* Open Graph */}
             <meta property="og:type" content={type} />
+            <meta property="og:locale" content={OG_LOCALES[locale]} />
+            {alternates
+                .filter((l) => l !== locale)
+                .map((l) => (
+                    <meta
+                        key={`og-locale-${l}`}
+                        property="og:locale:alternate"
+                        content={OG_LOCALES[l]}
+                    />
+                ))}
             <meta property="og:title" content={pageTitle} />
             <meta property="og:description" content={description} />
             <meta property="og:url" content={url} />

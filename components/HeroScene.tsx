@@ -3,6 +3,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
+import { useT } from "../lib/i18n";
+
 const MODEL = "/models/RobotExpressive.glb";
 
 type OneShot = { name: string; n: number } | null;
@@ -118,6 +120,7 @@ type Heart = {
 };
 
 const HeroScene = () => {
+    const t = useT();
     const [action, setAction] = useState<OneShot>(null);
     const [isTouch, setIsTouch] = useState(false);
     const [hearts, setHearts] = useState<Heart[]>([]);
@@ -322,16 +325,16 @@ const HeroScene = () => {
 
             {/* Action buttons */}
             <div className="pointer-events-none absolute right-3 top-3 flex gap-2">
-                <button type="button" className={btn} onClick={() => trigger("Wave")} aria-label="Wave">
+                <button type="button" className={btn} onClick={() => trigger("Wave")} aria-label={t.scene.wave}>
                     👋
                 </button>
-                <button type="button" className={btn} onClick={() => trigger("Dance")} aria-label="Dance">
+                <button type="button" className={btn} onClick={() => trigger("Dance")} aria-label={t.scene.dance}>
                     🕺
                 </button>
-                <button type="button" className={btn} onClick={() => trigger("Jump")} aria-label="Jump">
+                <button type="button" className={btn} onClick={() => trigger("Jump")} aria-label={t.scene.jump}>
                     ⤴
                 </button>
-                <button type="button" className={btn} onClick={loveBurst} aria-label="Love">
+                <button type="button" className={btn} onClick={loveBurst} aria-label={t.scene.love}>
                     💛
                 </button>
             </div>
@@ -340,19 +343,19 @@ const HeroScene = () => {
             {isTouch && (
                 <div className="pointer-events-none absolute bottom-3 left-3 grid grid-cols-3 gap-1">
                     <span />
-                    <button type="button" className={pad} aria-label="Up" {...hold("f")}>
+                    <button type="button" className={pad} aria-label={t.scene.up} {...hold("f")}>
                         ▲
                     </button>
                     <span />
-                    <button type="button" className={pad} aria-label="Left" {...hold("l")}>
+                    <button type="button" className={pad} aria-label={t.scene.left} {...hold("l")}>
                         ◀
                     </button>
                     <span />
-                    <button type="button" className={pad} aria-label="Right" {...hold("r")}>
+                    <button type="button" className={pad} aria-label={t.scene.right} {...hold("r")}>
                         ▶
                     </button>
                     <span />
-                    <button type="button" className={pad} aria-label="Down" {...hold("b")}>
+                    <button type="button" className={pad} aria-label={t.scene.down} {...hold("b")}>
                         ▼
                     </button>
                     <span />
@@ -365,10 +368,10 @@ const HeroScene = () => {
                     <kbd className={kbd}>WASD</kbd>
                     <span>/</span>
                     <kbd className={kbd}>↑↓←→</kbd>
-                    <span>move</span>
+                    <span>{t.scene.moveHint}</span>
                     <span className="opacity-40">·</span>
                     <kbd className={kbd}>Space</kbd>
-                    <span>jump</span>
+                    <span>{t.scene.jumpHint}</span>
                 </div>
             )}
         </div>

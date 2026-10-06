@@ -3,8 +3,6 @@ export const siteConfig = {
     fullName: "Vương Tuấn Anh",
     title: "Kiril's Blog · KirilNgusi",
     role: "Backend Engineer (Golang)",
-    description:
-        "Notes on backend engineering, distributed systems and the things I'm learning along the way — a personal blog by Kiril (Vương Tuấn Anh / KirilNgusi).",
     // Name variants so searching any of these surfaces the site.
     alternateNames: ["KirilNgusi", "Kiril Ngusi", "Vương Tuấn Anh"],
     // Name variants stay first so searching any of them still surfaces the
@@ -14,16 +12,8 @@ export const siteConfig = {
     url: "https://kirilngusi.vercel.app",
     ogImage: "/images/home.png",
     email: "vuongtuan1211@gmail.com",
-    locale: "en",
-    // Homepage voice. Deliberately not the CV summary — the landing page is a
-    // blog, so it introduces the writing, not the résumé. Job titles, employers
-    // and skill lists live on /about.
-    blog: {
-        eyebrow: "Welcome to the blog",
-        heading: "Kiril's Blog",
-        intro:
-            "Hi, I'm Kiril (Tuan Anh). I write about the things I bump into while building backend systems - what broke, what I misread, and what finally clicked. Mostly notes to my future self, kept in the open in case they're useful to you too. Thanks for stopping by!",
-    },
+    // Locale settings and all translated copy (homepage voice included) live
+    // in lib/i18n.ts.
     author: "Vương Tuấn Anh (Kiril / KirilNgusi)",
     // Google Search Console verification (HTML-tag method). Set via env so it
     // can change without a code commit — see NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION.

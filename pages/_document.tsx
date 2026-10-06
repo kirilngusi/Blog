@@ -15,7 +15,8 @@ const themeScript = `
 
 export default function Document() {
     return (
-        <Html lang="en">
+        // No lang prop: with i18n configured, Next fills it from the locale.
+        <Html>
             <Head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
