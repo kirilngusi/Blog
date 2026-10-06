@@ -1,6 +1,8 @@
 // Normalized post metadata derived from a raw Notion database row, so every
 // consumer (blog list, post page, RSS, sitemap) reads the same clean shape.
 
+import { DATE_LOCALES, Locale } from "./i18n";
+
 export interface PostMeta {
     id: string;
     title: string;
@@ -8,7 +10,11 @@ export interface PostMeta {
     slug: string;
     date: string; // "YYYY-MM-DD"
     tags: string[];
+    // Language of this row's content ("en" | "vi"), "" if unset in Notion.
     lang: string;
+    // Every language this slug exists in. Translations are separate Notion
+    // rows that share a slug and differ in Lang.
+    availableLangs: string[];
 }
 
 // Estimate reading time (minutes) from a react-notion-x recordMap by counting
@@ -36,6 +42,7 @@ const richText = (prop: any): string =>
 
 export const toPostMeta = (row: any): PostMeta => {
     const p = row?.properties ?? {};
+    const lang = p.Lang?.select?.name ?? "";
     return {
         id: row?.id ?? "",
         title:
@@ -46,15 +53,16 @@ export const toPostMeta = (row: any): PostMeta => {
         slug: richText(p.slug).trim(),
         date: p.Date?.date?.start ?? row?.created_time?.split("T")[0] ?? "",
         tags: (p.Tag?.multi_select ?? []).map((t: any) => t.name),
-        lang: p.Lang?.select?.name ?? "",
+        lang,
+        availableLangs: lang ? [lang] : [],
     };
 };
 
-export const formatDate = (iso?: string): string => {
+export const formatDate = (iso?: string, locale: Locale = "en"): string => {
     if (!iso) return "";
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return "";
-    return d.toLocaleDateString("en-US", {
+    return d.toLocaleDateString(DATE_LOCALES[locale], {
         year: "numeric",
         month: "short",
         day: "numeric",

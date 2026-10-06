@@ -2,9 +2,14 @@ import Giscus from "@giscus/react";
 
 import { siteConfig } from "../lib/siteConfig";
 import { useTheme } from "../lib/useTheme";
+import { useLocale } from "../lib/i18n";
 
-const Comments = () => {
+// `term` pins the thread explicitly so /blog/x and /vi/blog/x share one
+// discussion. Use the locale-less path: it equals what the old "pathname"
+// mapping produced, so existing threads stay attached.
+const Comments = ({ term }: { term: string }) => {
     const { theme, mounted } = useTheme();
+    const locale = useLocale();
     const { repo, repoId, category, categoryId } = siteConfig.giscus;
 
     // Until configured (repoId/categoryId from giscus.app), show a hint instead
@@ -38,13 +43,14 @@ const Comments = () => {
                 repoId={repoId}
                 category={category}
                 categoryId={categoryId}
-                mapping="pathname"
+                mapping="specific"
+                term={term}
                 strict="1"
                 reactionsEnabled="1"
                 emitMetadata="0"
                 inputPosition="top"
                 theme={theme === "dark" ? "dark_dimmed" : "light"}
-                lang="en"
+                lang={locale}
                 loading="lazy"
             />
         </section>

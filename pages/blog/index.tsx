@@ -9,10 +9,12 @@ import { FiSearch, FiX } from "react-icons/fi";
 
 import SEO from "../../components/SEO";
 import PostCard from "../../components/PostCard";
+import { toLocale, useT } from "../../lib/i18n";
 
 const AllPost = ({ posts }: { posts: PostMeta[] }) => {
     const [query, setQuery] = useState("");
     const [activeTag, setActiveTag] = useState<string | null>(null);
+    const t = useT();
 
     // All posts' metadata is tiny, so client-side fuzzy search stays instant
     // even at hundreds of posts. (For thousands, move to a prebuilt index or a
@@ -40,17 +42,12 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
 
     return (
         <div className="mx-auto max-w-3xl px-6 text-black dark:text-dark-50">
-            <SEO
-                title="Blog"
-                description="Notes on backend engineering, distributed systems, and things I'm learning."
-                path="/blog"
-            />
+            <SEO title={t.blog.title} description={t.blog.description} path="/blog" />
 
             <section className="mb-6">
-                <h1 className="mb-3 font-serif text-4xl font-bold">Blog</h1>
+                <h1 className="mb-3 font-serif text-4xl font-bold">{t.blog.title}</h1>
                 <p className="mb-5 leading-7 text-gray-600 dark:text-dark-100">
-                    Notes on backend engineering, distributed systems, and
-                    things I&apos;m learning along the way.
+                    {t.blog.description}
                 </p>
 
                 <div className="relative">
@@ -58,14 +55,14 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
                     <input
                         className="w-full rounded-lg border border-light-800 bg-white/60 py-2.5 pl-10 pr-10 text-black outline-none transition-colors placeholder:text-gray-400 focus:border-accent-500 dark:border-dark-600 dark:bg-dark-700/40 dark:text-white"
                         type="text"
-                        placeholder="Search posts..."
+                        placeholder={t.blog.searchPlaceholder}
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                     />
                     {query && (
                         <button
                             type="button"
-                            aria-label="Clear search"
+                            aria-label={t.blog.clearSearch}
                             onClick={() => setQuery("")}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-accent-600 dark:hover:text-accent-400"
                         >
@@ -85,7 +82,7 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
                                     : "bg-light-700 text-gray-600 hover:bg-light-800 dark:bg-dark-600 dark:text-dark-100 dark:hover:bg-dark-500"
                             }`}
                         >
-                            All
+                            {t.blog.allTags}
                         </button>
                         {allTags.map((tag) => (
                             <button
@@ -109,10 +106,8 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
 
             <div className="mb-4 text-sm font-medium text-gray-400 dark:text-dark-200">
                 {query.trim() || activeTag
-                    ? `${results.length} result${
-                          results.length === 1 ? "" : "s"
-                      }`
-                    : `${posts.length} posts`}
+                    ? t.blog.results(results.length)
+                    : t.blog.posts(posts.length)}
             </div>
 
             <div className="flex flex-col gap-3">
@@ -149,7 +144,7 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
                         />
                     </svg>
                     <p className="font-medium text-gray-500 dark:text-dark-200">
-                        No posts found. Try a different search or tag.
+                        {t.blog.noResults}
                     </p>
                 </div>
             )}
@@ -159,8 +154,8 @@ const AllPost = ({ posts }: { posts: PostMeta[] }) => {
 
 export default AllPost;
 
-export const getStaticProps = async () => {
-    const posts = await getPostList();
+export const getStaticProps = async ({ locale }: { locale?: string }) => {
+    const posts = await getPostList(toLocale(locale));
 
     return {
         props: { posts },

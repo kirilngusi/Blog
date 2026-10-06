@@ -8,6 +8,7 @@ import { SiGithub, SiLinkedin, SiTwitter, SiFacebook } from "react-icons/si";
 import SEO from "../../components/SEO";
 import { siteConfig } from "../../lib/siteConfig";
 import { projects, Project } from "../../lib/data/projects";
+import { useLocale, useT } from "../../lib/i18n";
 
 interface Social {
     name: string;
@@ -24,7 +25,11 @@ const socials: Social[] = [
     { name: "Email", link: `mailto:${siteConfig.email}`, icon: FiMail, color: "#059669" },
 ];
 
-const ProjectCard = ({ project }: { project: Project }) => (
+const ProjectCard = ({ project }: { project: Project }) => {
+    const t = useT();
+    const locale = useLocale();
+
+    return (
     <div className="group flex flex-col rounded-xl border border-light-800 p-5 transition-all hover:-translate-y-0.5 hover:border-accent-500 hover:shadow-sm dark:border-dark-600 dark:hover:border-accent-400">
         <div className="mb-2 flex items-start justify-between gap-3">
             <h3 className="font-bold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
@@ -36,7 +41,7 @@ const ProjectCard = ({ project }: { project: Project }) => (
             />
         </div>
         <p className="mb-4 flex-1 text-sm leading-6 text-gray-600 dark:text-dark-100">
-            {project.description}
+            {project.description[locale]}
         </p>
         <div className="flex flex-wrap items-center gap-2">
             {project.tech.map((t) => (
@@ -53,7 +58,7 @@ const ProjectCard = ({ project }: { project: Project }) => (
                         href={project.repo}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label={`${project.name} on GitHub`}
+                        aria-label={t.projects.onGithub(project.name)}
                         className="transition-colors hover:text-accent-600 dark:hover:text-accent-400"
                     >
                         <SiGithub size={18} />
@@ -64,7 +69,7 @@ const ProjectCard = ({ project }: { project: Project }) => (
                         href={project.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label={`${project.name} live site`}
+                        aria-label={t.projects.liveSite(project.name)}
                         className="transition-colors hover:text-accent-600 dark:hover:text-accent-400"
                     >
                         <FiExternalLink size={18} />
@@ -73,14 +78,17 @@ const ProjectCard = ({ project }: { project: Project }) => (
             </div>
         </div>
     </div>
-);
+    );
+};
 
 const Projectsnsocials = () => {
+    const t = useT();
+
     return (
         <div className="mx-auto max-w-3xl px-6 text-black dark:text-dark-50">
             <SEO
-                title="Projects & Socials"
-                description="Projects I've built and where to find me online."
+                title={t.nav.projects}
+                description={t.projects.description}
                 path="/projectsnsocials"
             />
 
@@ -90,7 +98,7 @@ const Projectsnsocials = () => {
                 transition={{ duration: 0.4 }}
                 className="mb-6 font-serif text-4xl font-bold"
             >
-                Projects
+                {t.projects.heading}
             </motion.h1>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -108,7 +116,7 @@ const Projectsnsocials = () => {
             </div>
 
             <h2 className="mb-6 mt-14 font-serif text-3xl font-bold">
-                Let&apos;s connect
+                {t.projects.connect}
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {socials.map((s, i) => (

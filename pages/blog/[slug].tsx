@@ -16,12 +16,13 @@ import { Equation } from "react-notion-x/build/third-party/equation";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { FiArrowLeft, FiClock } from "react-icons/fi";
+import { FiArrowLeft, FiClock, FiGlobe } from "react-icons/fi";
 
 import SEO from "../../components/SEO";
 import Comments from "../../components/Comments";
 import PostCard from "../../components/PostCard";
 import { useTheme } from "../../lib/useTheme";
+import { LOCALES, toLocale, useLocale, useT } from "../../lib/i18n";
 
 const Code = dynamic(async () => {
     const m = await import("react-notion-x/build/third-party/code");
@@ -64,6 +65,11 @@ const SinglePost = ({
 }) => {
     const { theme } = useTheme();
     const isDark = theme === "dark";
+    const t = useT();
+    const locale = useLocale();
+    // No translation in this locale yet, so we're showing another language.
+    const contentLang = meta.lang ? toLocale(meta.lang) : null;
+    const fallbackLang = contentLang && contentLang !== locale ? contentLang : null;
 
     return (
         <div className="mx-auto max-w-3xl px-6 lg:max-w-4xl">
@@ -74,24 +80,29 @@ const SinglePost = ({
                 type="article"
                 publishedTime={meta.date}
                 tags={meta.tags}
+                alternateLocales={meta.availableLangs}
+                canonicalLocale={fallbackLang ?? undefined}
             />
 
             <Link href="/blog">
                 <a className="group mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-accent-600 dark:text-dark-200 dark:hover:text-accent-400">
                     <FiArrowLeft className="transition-transform group-hover:-translate-x-0.5" />
-                    Back to blog
+                    {t.post.backToBlog}
                 </a>
             </Link>
 
             {/* Custom post header (replaces the raw Notion property table) */}
             <header className="mb-8 border-b border-light-800 pb-6 dark:border-dark-600">
-                <h1 className="font-serif text-3xl font-bold text-black dark:text-white sm:text-4xl">
+                <h1
+                    lang={contentLang ?? undefined}
+                    className="font-serif text-3xl font-bold text-black dark:text-white sm:text-4xl"
+                >
                     {meta.title}
                 </h1>
                 <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-500 dark:text-dark-200">
-                    {meta.date && <time>{formatDate(meta.date)}</time>}
+                    {meta.date && <time>{formatDate(meta.date, locale)}</time>}
                     <span className="inline-flex items-center gap-1">
-                        <FiClock size={13} /> {readingTime} min read
+                        <FiClock size={13} /> {t.post.minRead(readingTime)}
                     </span>
                     {meta.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
@@ -107,14 +118,23 @@ const SinglePost = ({
                 </div>
             </header>
 
-            <NotionRenderer
-                components={{ Code, Collection, Equation, Modal, Pdf }}
-                recordMap={blocks}
-                fullPage={true}
-                darkMode={isDark}
-                showTableOfContents={true}
-                minTableOfContentsItems={3}
-            />
+            {fallbackLang && (
+                <p className="mb-6 flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/5 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+                    <FiGlobe className="flex-shrink-0" />
+                    {t.post.onlyIn(t.langName[fallbackLang])}
+                </p>
+            )}
+
+            <div lang={contentLang ?? undefined}>
+                <NotionRenderer
+                    components={{ Code, Collection, Equation, Modal, Pdf }}
+                    recordMap={blocks}
+                    fullPage={true}
+                    darkMode={isDark}
+                    showTableOfContents={true}
+                    minTableOfContentsItems={3}
+                />
+            </div>
 
             {(prev || next) && (
                 <nav className="mt-12 grid gap-3 border-t border-light-800 pt-6 sm:grid-cols-2 dark:border-dark-600">
@@ -122,7 +142,7 @@ const SinglePost = ({
                         <Link href={`/blog/${prev.slug}`}>
                             <a className="group rounded-xl border border-light-800 p-4 transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
                                 <div className="text-xs font-medium text-gray-400 dark:text-dark-200">
-                                    &larr; Older
+                                    &larr; {t.post.older}
                                 </div>
                                 <div className="mt-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
                                     {prev.title}
@@ -136,7 +156,7 @@ const SinglePost = ({
                         <Link href={`/blog/${next.slug}`}>
                             <a className="group rounded-xl border border-light-800 p-4 text-right transition-colors hover:border-accent-500 dark:border-dark-600 dark:hover:border-accent-400">
                                 <div className="text-xs font-medium text-gray-400 dark:text-dark-200">
-                                    Newer &rarr;
+                                    {t.post.newer} &rarr;
                                 </div>
                                 <div className="mt-1 font-semibold text-black group-hover:text-accent-600 dark:text-white dark:group-hover:text-accent-400">
                                     {next.title}
@@ -150,7 +170,7 @@ const SinglePost = ({
             {related.length > 0 && (
                 <section className="mt-12">
                     <h2 className="mb-4 font-serif text-2xl font-bold text-black dark:text-white">
-                        Related posts
+                        {t.post.related}
                     </h2>
                     <div className="flex flex-col gap-3">
                         {related.map((p) => (
@@ -160,7 +180,7 @@ const SinglePost = ({
                 </section>
             )}
 
-            <Comments />
+            <Comments term={`blog/${meta.slug}`} />
 
             <style jsx global>{`
                 /* We render our own header, so hide Notion's title, cover and
@@ -262,20 +282,29 @@ const SinglePost = ({
 export default SinglePost;
 
 export const getStaticPaths = async () => {
+    // getPostList already drops slug-less rows, and every slug exists in every
+    // locale (untranslated ones fall back), so each pair here resolves.
     const posts = await getPostList();
 
     return {
-        // getPostList already drops slug-less rows, so every path here resolves.
-        paths: posts.map((p) => ({ params: { slug: p.slug } })),
+        paths: LOCALES.flatMap((locale) =>
+            posts.map((p) => ({ params: { slug: p.slug }, locale }))
+        ),
         // 'blocking' so a post published after the last deploy gets SSR'd and
         // cached on first request instead of 404ing until the next redeploy.
         fallback: "blocking",
     };
 };
 
-export const getStaticProps = async ({ params }: { params: any }) => {
+export const getStaticProps = async ({
+    params,
+    locale,
+}: {
+    params: any;
+    locale?: string;
+}) => {
     // One fetch covers the post itself plus its related/adjacent posts.
-    const posts = await getPostList();
+    const posts = await getPostList(toLocale(locale));
     const meta = posts.find((p) => p.slug === params?.slug);
 
     if (!meta) {
